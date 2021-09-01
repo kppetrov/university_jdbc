@@ -1,16 +1,16 @@
 package ua.com.foxminded.university.model;
 
+import java.util.Objects;
+
 public class Classroom {
     private int id;
-    private int number;
     private String name;
 
     public Classroom() {
     }
 
-    public Classroom(int id, int number, String name) {
+    public Classroom(int id, String name) {
         this.id = id;
-        this.number = number;
         this.name = name;
     }
 
@@ -22,19 +22,33 @@ public class Classroom {
         this.id = id;
     }
 
-    public int getNumber() {
-        return number;
-    }
-
-    public void setNumber(int number) {
-        this.number = number;
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Classroom other = (Classroom) obj;
+        return id == other.id && Objects.equals(name, other.name);
+    }
+
+    @Override
+    public String toString() {
+        return "Classroom [id=" + id + ", name=" + name + "]";
     }
 }

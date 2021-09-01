@@ -1,6 +1,7 @@
 package ua.com.foxminded.university.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Course {
     private int id;
@@ -49,4 +50,26 @@ public class Course {
     public void setGroups(List<Group> groups) {
         this.groups = groups;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Course other = (Course) obj;
+        return id == other.id && Objects.equals(name, other.name);
+    }
+
+    @Override
+    public String toString() {
+        return "Course [id=" + id + ", name=" + name + "]";
+    }    
 }

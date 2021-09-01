@@ -1,6 +1,7 @@
 package ua.com.foxminded.university.model;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 public abstract class AbstractPerson {
     private int id;
@@ -59,4 +60,22 @@ public abstract class AbstractPerson {
     public void setBirthdate(LocalDate birthdate) {
         this.birthdate = birthdate;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(birthdate, firstName, gender, id, lastName);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        AbstractPerson other = (AbstractPerson) obj;
+        return Objects.equals(birthdate, other.birthdate) && Objects.equals(firstName, other.firstName)
+                && gender == other.gender && id == other.id && Objects.equals(lastName, other.lastName);
+    }  
 }

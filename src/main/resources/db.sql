@@ -25,8 +25,8 @@ CREATE TABLE courses (
 CREATE TABLE periods (
     id SERIAL PRIMARY KEY NOT NULL,
     name VARCHAR(25),
-    start_time time,
-    end_time time
+    start_time TIME,
+    end_time TIME
 );
 
 CREATE TABLE students (
@@ -35,6 +35,7 @@ CREATE TABLE students (
     first_name VARCHAR(25) NOT NULL,
     last_name VARCHAR(25) NOT NULL,
     gender int,
+    birthdate DATE,
     FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE SET NULL
 );
 
@@ -42,7 +43,8 @@ CREATE TABLE teachers (
     id SERIAL PRIMARY KEY NOT NULL,
     first_name VARCHAR(25) NOT NULL,
     last_name VARCHAR(25) NOT NULL,
-    gender int
+    gender int,
+    birthdate DATE
 );
 
 CREATE TABLE lessons

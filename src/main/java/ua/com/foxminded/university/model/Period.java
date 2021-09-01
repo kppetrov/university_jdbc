@@ -1,6 +1,7 @@
 package ua.com.foxminded.university.model;
 
 import java.time.LocalTime;
+import java.util.Objects;
 
 public class Period {
     private int id;
@@ -49,4 +50,27 @@ public class Period {
     public void setEnd(LocalTime end) {
         this.end = end;
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(end, id, name, start);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        Period other = (Period) obj;
+        return Objects.equals(end, other.end) && id == other.id && Objects.equals(name, other.name)
+                && Objects.equals(start, other.start);
+    }
+
+    @Override
+    public String toString() {
+        return "Period [id=" + id + ", name=" + name + ", start=" + start + ", end=" + end + "]";
+    }    
 }
