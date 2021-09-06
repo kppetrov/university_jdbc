@@ -34,7 +34,7 @@ CREATE TABLE students (
     group_id INT,
     first_name VARCHAR(25) NOT NULL,
     last_name VARCHAR(25) NOT NULL,
-    gender int,
+    gender VARCHAR(6),
     birthdate DATE,
     FOREIGN KEY (group_id) REFERENCES groups (id) ON DELETE SET NULL
 );
@@ -43,7 +43,7 @@ CREATE TABLE teachers (
     id SERIAL PRIMARY KEY NOT NULL,
     first_name VARCHAR(25) NOT NULL,
     last_name VARCHAR(25) NOT NULL,
-    gender int,
+    gender VARCHAR(6),
     birthdate DATE
 );
 

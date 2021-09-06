@@ -1,22 +1,22 @@
 package ua.com.foxminded.university.model;
 
 public enum Gender {
-    MAIL(1),
-    FEMAIL(2);
+    MAIL("MAIL"),
+    FEMAIL("FEMAIL");
     
-    private final int id;    
+    private final String value;    
     
-    Gender(int id) {
-        this.id = id;
+    Gender(String value) {
+        this.value = value;
     }
     
-    public int getId() {
-        return id;
+    public String getValue() {
+        return value;
     }
     
-    public static Gender of(int id) {
+    public static Gender of(String value) {
         for (Gender e : values()) {
-            if (id == e.id) {
+            if (value.equals(e.value)) {
                 return e;
             }
         }
