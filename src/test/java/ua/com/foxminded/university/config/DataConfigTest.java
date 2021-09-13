@@ -13,11 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 
-class AppConfigTest {
+class DataConfigTest {
 
     @Test
     void testConfig() throws SQLException {
-        GenericApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class);
+        GenericApplicationContext ctx = new AnnotationConfigApplicationContext(DataConfig.class);
 
         DataSource dataSource = ctx.getBean("dataSource", DataSource.class);
         assertNotNull(dataSource);

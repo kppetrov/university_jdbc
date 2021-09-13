@@ -56,7 +56,7 @@ CREATE TABLE lessons
     period_id INT NOT NULL,
     date DATE,
     FOREIGN KEY (course_id) REFERENCES courses (id) ON DELETE CASCADE,
-    FOREIGN KEY (teacher_id) REFERENCES students (id) ON DELETE CASCADE,
+    FOREIGN KEY (teacher_id) REFERENCES teachers (id) ON DELETE CASCADE,
     FOREIGN KEY (classroom_id) REFERENCES classrooms (id) ON DELETE CASCADE,
     FOREIGN KEY (period_id) REFERENCES periods (id) ON DELETE CASCADE,
     UNIQUE (course_id,teacher_id,classroom_id,period_id,date)

@@ -8,12 +8,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 @Configuration
-@PropertySource("classpath:jdbc.properties")
+@PropertySource("classpath:db/jdbc.properties")
 @ComponentScan(basePackages = "ua.com.foxminded.university")
-public class AppConfig {
+public class DataConfig {
     @Value("${driverClassName}")
     private String driverClassName;
     @Value("${url}")
@@ -34,7 +34,7 @@ public class AppConfig {
     }
     
     @Bean
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource());
+    public NamedParameterJdbcTemplate jdbcTemplate() {
+        return new NamedParameterJdbcTemplate(dataSource());
     }
 }
