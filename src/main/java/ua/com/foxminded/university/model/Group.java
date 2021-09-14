@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,12 +10,37 @@ public class Group {
     private List<Student> students;
 
     public Group() {
+    }   
+
+    public Group(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Group(int id, String name, List<Student> students) {
         this.id = id;
         this.name = name;
         this.students = students;
+    }
+    
+    public boolean addStudent(Student student) {
+        if (students == null) {
+            students = new ArrayList<>();
+        } else {
+            if (students.contains(student)) {
+                return false;
+            }
+        }
+        students.add(student);
+        return true;
+    }
+    
+    public boolean removeStudent(Student student) {
+        if (students == null) {
+            return false;
+        } else {
+            return students.remove(student);
+        }
     }
 
     public int getId() {

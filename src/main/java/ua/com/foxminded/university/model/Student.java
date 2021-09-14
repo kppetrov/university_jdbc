@@ -19,13 +19,15 @@ public class Student extends AbstractPerson {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (!super.equals(obj))
+        } else if (!super.equals(obj)) {
             return false;
-        if (getClass() != obj.getClass())
+        } else if (getClass() != obj.getClass()) {
             return false;
-        return true;
+        } else {
+            return true;
+        }
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ua.com.foxminded.university.model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -10,6 +11,12 @@ public class Course {
     private List<Group> groups;
 
     public Course() {
+        
+    }
+    
+    public Course(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public Course(int id, String name, List<Lesson> lessons, List<Group> groups) {
@@ -17,6 +24,46 @@ public class Course {
         this.name = name;
         this.lessons = lessons;
         this.groups = groups;
+    }
+
+    public boolean addGroup(Group group) {
+        if (groups == null) {
+            groups = new ArrayList<>();
+        } else {
+            if (groups.contains(group)) {
+                return false;
+            }
+        }
+        groups.add(group);
+        return true;
+    }
+
+    public boolean removeGroup(Group group) {
+        if (groups == null) {
+            return false;
+        } else {
+            return groups.remove(group);
+        }
+    }
+    
+    public boolean addLesson(Lesson lesson) {
+        if (lessons == null) {
+            lessons = new ArrayList<>();
+        } else {
+            if (lessons.contains(lesson)) {
+                return false;
+            }
+        }
+        lessons.add(lesson);
+        return true;
+    }
+
+    public boolean removeGroup(Lesson lesson) {
+        if (lessons == null) {
+            return false;
+        } else {
+            return lessons.remove(lesson);
+        }
     }
 
     public int getId() {
@@ -71,5 +118,5 @@ public class Course {
     @Override
     public String toString() {
         return "Course [id=" + id + ", name=" + name + "]";
-    }    
+    }
 }
