@@ -44,6 +44,12 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
                     + "on l.teacher_id = t.id";
     private static final String GET_BY_ID = GET_ALL + " where l.id = :id";
     private static final String GET_BY_COURSE_ID = GET_ALL + " where l.course_id = :course_id";  
+    private static final String GET_BY_TEACHER_ID = GET_ALL + " where l.teacher_id = :teacher_id";
+    private static final String GET_BY_GROUP_ID = 
+            GET_ALL
+            + " left join course_group as cg "
+                    + "on l.course_id = cg.course_id "
+            + " where cg.group_id = :group_id";
     private static final String INSERT = 
             "insert into lessons (date, course_id, period_id, classroom_id, teacher_id) "
           + "values (:date, :course_id, :period_id, :classroom_id, :teacher_id)";
@@ -78,13 +84,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
             return new Lesson();
         }
         return lessons.get(0);
-    }    
-
-    @Override
-    public List<Lesson> getByCourseId(int curseId) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", curseId);
-        return jdbcTemplate.query(GET_BY_COURSE_ID, namedParameters, lessonMapper);
-    }
+    } 
 
     @Override
     public Lesson insert(Lesson item) {
@@ -116,5 +116,23 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
     public int delete(int id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
         return jdbcTemplate.update(DELETE, namedParameters);
+    }
+    
+    @Override
+    public List<Lesson> getByGroupId(int groupId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource("group_id", groupId);
+        return jdbcTemplate.query(GET_BY_GROUP_ID, namedParameters, lessonMapper);
+    }
+
+    @Override
+    public List<Lesson> getByTeacherId(int teacherId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource("teacher_id", teacherId);
+        return jdbcTemplate.query(GET_BY_TEACHER_ID, namedParameters, lessonMapper);
+    }
+
+    @Override
+    public List<Lesson> getByCourseId(int curseId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", curseId);
+        return jdbcTemplate.query(GET_BY_COURSE_ID, namedParameters, lessonMapper);
     }
 }

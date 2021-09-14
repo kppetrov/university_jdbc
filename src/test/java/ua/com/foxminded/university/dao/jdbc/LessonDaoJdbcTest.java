@@ -125,4 +125,40 @@ class LessonDaoJdbcTest {
                 () -> assertEquals(course2Lessons, actual2)
                 );
     }
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void testGetByGroupId() {
+        List<Lesson> groupe1Lessons = new ArrayList<>();
+        groupe1Lessons.add(lesson1);
+        groupe1Lessons.add(lesson2);
+        List<Lesson> groupe2Lessons = new ArrayList<>();
+        groupe2Lessons.add(lesson3);
+        groupe2Lessons.add(lesson4);        
+        List<Lesson> actual1 = dao.getByGroupId(1);
+        List<Lesson> actual2 = dao.getByGroupId(2);
+        assertAll(
+                () -> assertEquals(groupe1Lessons, actual1), 
+                () -> assertEquals(groupe2Lessons, actual2)
+                );
+    }
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void testGetByTeacherId() {
+        List<Lesson> teacher1Lessons = new ArrayList<>();
+        teacher1Lessons.add(lesson1);
+        teacher1Lessons.add(lesson2);
+        List<Lesson> teacher2Lessons = new ArrayList<>();
+        teacher2Lessons.add(lesson3);
+        teacher2Lessons.add(lesson4);        
+        List<Lesson> actual1 = dao.getByTeacherId(1);
+        List<Lesson> actual2 = dao.getByTeacherId(2);
+        assertAll(
+                () -> assertEquals(teacher1Lessons, actual1), 
+                () -> assertEquals(teacher2Lessons, actual2)
+                );
+    }
 }
