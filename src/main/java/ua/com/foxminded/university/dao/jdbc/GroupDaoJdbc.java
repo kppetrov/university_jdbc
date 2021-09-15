@@ -1,5 +1,15 @@
 package ua.com.foxminded.university.dao.jdbc;
 
+import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_GET_ALL;
+import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_GET_BY_ID;
+import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_GET_BY_COURSE_ID;
+import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_GET_BY_ID_DETAIL;
+import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_INSERT;
+import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_UPDATE;
+import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_DELETE;
+import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_REMOVE_STUDENTS_FROM_GROUP;
+import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_ADD_STUDENTS_TO_GROUP;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,41 +29,6 @@ import ua.com.foxminded.university.model.Student;
 
 @Repository
 public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
-    private static final String GET_ALL = "select g.id as group_id, g.name as group_name from groups as g ";
-    private static final String GET_BY_ID = "select g.id as group_id, g.name as group_name from groups as g where g.id = :id";
-    private static final String GET_BY_COURSE_ID = 
-            "select "
-                + "g.id as group_id, "
-                + "g.name as group_name "
-            + "from groups as g "
-                + "left join course_group as cg "
-                    + "on g.id = cg.group_id "
-            + "where cg.course_id = :course_id";
-    private static final String GET_BY_ID_DETAIL = 
-            "select "
-                + "g.id as group_id, "
-                + "g.name as group_name, "
-                + "s.id as student_id, "
-                + "s.first_name, "
-                + "s.last_name, "
-                + "s.gender, "
-                + "s.birthdate "
-            + "from groups as g "
-                + "left join students s "
-                + "on g.id = s.group_id "
-                + "where g.id = :id";
-    private static final String INSERT = "insert into groups (name) values (:name)";
-    private static final String UPDATE = "update groups set name = :name where id = :id";
-    private static final String DELETE = "delete from groups where id = :id";
-    private static final String REMOVE_STUDENTS_FROM_GROUP = 
-            "update students "
-          + "set group_id = null "
-          + "where group_id is not distinct from :group_id and not id in(:students_ids)";
-    private static final String ADD_STUDENTS_TO_GROUP = 
-            "update students " 
-          + "set group_id = :group_id " 
-          + "where group_id is distinct from :group_id and id in(:students_ids)";
-
     private GroupMapper groupMapper;
     private GroupWithStudentsExtractor groupWithDetailExtractor;
     
@@ -69,13 +44,13 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
 
     @Override
     public List<Group> getAll() {
-        return jdbcTemplate.query(GET_ALL, groupMapper);
+        return jdbcTemplate.query(GROUP_GET_ALL, groupMapper);
     }
 
     @Override
     public Group getById(int id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        List<Group> groups = jdbcTemplate.query(GET_BY_ID, namedParameters, groupMapper);
+        List<Group> groups = jdbcTemplate.query(GROUP_GET_BY_ID, namedParameters, groupMapper);
         if (groups.isEmpty()) {
             return new Group();
         }
@@ -85,20 +60,20 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
     @Override
     public Group getByIdWithDetail(int id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.query(GET_BY_ID_DETAIL, namedParameters, groupWithDetailExtractor);
+        return jdbcTemplate.query(GROUP_GET_BY_ID_DETAIL, namedParameters, groupWithDetailExtractor);
     }
     
     @Override
     public List<Group> getByCourseId(int curseId) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", curseId);
-        return jdbcTemplate.query(GET_BY_COURSE_ID, namedParameters, groupMapper);
+        return jdbcTemplate.query(GROUP_GET_BY_COURSE_ID, namedParameters, groupMapper);
     }
 
     @Override
     public Group insert(Group item) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("name", item.getName());
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(INSERT, namedParameters, keyHolder, new String[] { "id" });
+        jdbcTemplate.update(GROUP_INSERT, namedParameters, keyHolder, new String[] { "id" });
         return new Group(keyHolder.getKeyAs(Integer.class), item.getName(), new ArrayList<>());
     }
 
@@ -107,13 +82,13 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("id", item.getId())
                 .addValue("name", item.getName());
-        return jdbcTemplate.update(UPDATE, namedParameters);
+        return jdbcTemplate.update(GROUP_UPDATE, namedParameters);
     }
 
     @Override
     public int delete(int id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.update(DELETE, namedParameters);
+        return jdbcTemplate.update(GROUP_DELETE, namedParameters);
     }
 
     
@@ -124,8 +99,8 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("group_id", item.getId())
                 .addValue("students_ids", studentsIds);
-        result += jdbcTemplate.update(REMOVE_STUDENTS_FROM_GROUP, namedParameters);
-        result += jdbcTemplate.update(ADD_STUDENTS_TO_GROUP, namedParameters);     
+        result += jdbcTemplate.update(GROUP_REMOVE_STUDENTS_FROM_GROUP, namedParameters);
+        result += jdbcTemplate.update(GROUP_ADD_STUDENTS_TO_GROUP, namedParameters);     
         return result;
     }
 }

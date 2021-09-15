@@ -1,5 +1,11 @@
 package ua.com.foxminded.university.dao.jdbc;
 
+import static ua.com.foxminded.university.dao.jdbc.Query.PERIOD_GET_ALL;
+import static ua.com.foxminded.university.dao.jdbc.Query.PERIOD_GET_BY_ID;
+import static ua.com.foxminded.university.dao.jdbc.Query.PERIOD_INSERT;
+import static ua.com.foxminded.university.dao.jdbc.Query.PERIOD_UPDATE;
+import static ua.com.foxminded.university.dao.jdbc.Query.PERIOD_DELETE;
+
 import java.sql.Time;
 import java.util.List;
 
@@ -15,13 +21,7 @@ import ua.com.foxminded.university.dao.jdbc.mappers.PeriodMapper;
 import ua.com.foxminded.university.model.Period;
 
 @Repository
-public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
-    private static final String GET_ALL = "select id as period_id, name as period_name, start_time, end_time from periods";
-    private static final String GET_BY_ID = "select id as period_id, name as period_name, start_time, end_time from periods where id = :id";
-    private static final String INSERT = "insert into periods (name, start_time, end_time) values (:name, :start_time, :end_time)";
-    private static final String UPDATE = "update periods set name = :name, start_time = :start_time, end_time = :end_time where id = :id";
-    private static final String DELETE = "delete from periods where id = :id";
-    
+public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {    
     private PeriodMapper periodMapper;
 
     @Autowired
@@ -31,13 +31,13 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
 
     @Override
     public List<Period> getAll() {
-        return jdbcTemplate.query(GET_ALL, periodMapper);
+        return jdbcTemplate.query(PERIOD_GET_ALL, periodMapper);
     }
 
     @Override
     public Period getById(int id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        List<Period> periods = jdbcTemplate.query(GET_BY_ID, namedParameters, periodMapper);
+        List<Period> periods = jdbcTemplate.query(PERIOD_GET_BY_ID, namedParameters, periodMapper);
         if (periods.isEmpty()) {
             return new Period();
         }
@@ -51,7 +51,7 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
                 .addValue("start_time", Time.valueOf(item.getStart()))
                 .addValue("end_time", Time.valueOf(item.getEnd()));
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(INSERT, namedParameters, keyHolder, new String[] { "id" });
+        jdbcTemplate.update(PERIOD_INSERT, namedParameters, keyHolder, new String[] { "id" });
         return new Period(keyHolder.getKeyAs(Integer.class), item.getName(), item.getStart(), item.getEnd());
     }
 
@@ -62,12 +62,12 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
                 .addValue("name", item.getName())
                 .addValue("start_time", Time.valueOf(item.getStart()))
                 .addValue("end_time", Time.valueOf(item.getEnd()));
-        return jdbcTemplate.update(UPDATE, namedParameters);
+        return jdbcTemplate.update(PERIOD_UPDATE, namedParameters);
     }
 
     @Override
     public int delete(int id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.update(DELETE, namedParameters);
+        return jdbcTemplate.update(PERIOD_DELETE, namedParameters);
     }
 }

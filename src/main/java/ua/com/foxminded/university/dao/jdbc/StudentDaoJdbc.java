@@ -1,5 +1,11 @@
 package ua.com.foxminded.university.dao.jdbc;
 
+import static ua.com.foxminded.university.dao.jdbc.Query.STUDENT_GET_ALL;
+import static ua.com.foxminded.university.dao.jdbc.Query.STUDENT_GET_BY_ID;
+import static ua.com.foxminded.university.dao.jdbc.Query.STUDENT_INSERT;
+import static ua.com.foxminded.university.dao.jdbc.Query.STUDENT_UPDATE;
+import static ua.com.foxminded.university.dao.jdbc.Query.STUDENT_DELETE;
+
 import java.sql.Date;
 import java.util.List;
 
@@ -16,15 +22,6 @@ import ua.com.foxminded.university.model.Student;
 
 @Repository
 public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
-    private static final String GET_ALL = "select id as student_id, first_name, last_name, gender, birthdate from students";
-    private static final String GET_BY_ID = "select id as student_id, first_name, last_name, gender, birthdate from students where id = :id";
-    private static final String INSERT = "insert into students (first_name, last_name, gender, birthdate) "
-                                       + "values (:first_name, :last_name, :gender, :birthdate)";
-    private static final String UPDATE = "update students "
-                                       + "set first_name = :first_name, last_name = :last_name, gender = :gender, birthdate = :birthdate "
-                                       + "where id = :id";
-    private static final String DELETE = "delete from students where id = :id";
-
     private StudentMapper studentMapper;   
     
     @Autowired
@@ -34,13 +31,13 @@ public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
 
     @Override
     public List<Student> getAll() {
-        return jdbcTemplate.query(GET_ALL, studentMapper);
+        return jdbcTemplate.query(STUDENT_GET_ALL, studentMapper);
     }
 
     @Override
     public Student getById(int id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        List<Student> students = jdbcTemplate.query(GET_BY_ID, namedParameters, studentMapper);
+        List<Student> students = jdbcTemplate.query(STUDENT_GET_BY_ID, namedParameters, studentMapper);
         if (students.isEmpty()) {
             return new Student();
         }
@@ -55,7 +52,7 @@ public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
                 .addValue("gender", item.getGender().getValue())
                 .addValue("birthdate", Date.valueOf(item.getBirthdate()));
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(INSERT, namedParameters, keyHolder, new String[] { "id" });
+        jdbcTemplate.update(STUDENT_INSERT, namedParameters, keyHolder, new String[] { "id" });
         return new Student(keyHolder.getKeyAs(Integer.class), item.getFirstName(), item.getLastName(), item.getGender(),
                 item.getBirthdate());
     }
@@ -68,12 +65,12 @@ public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
                 .addValue("last_name", item.getLastName())
                 .addValue("gender", item.getGender().getValue())
                 .addValue("birthdate", Date.valueOf(item.getBirthdate()));
-        return jdbcTemplate.update(UPDATE, namedParameters);
+        return jdbcTemplate.update(STUDENT_UPDATE, namedParameters);
     }
 
     @Override
     public int delete(int id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.update(DELETE, namedParameters);
+        return jdbcTemplate.update(STUDENT_DELETE, namedParameters);
     }
 }

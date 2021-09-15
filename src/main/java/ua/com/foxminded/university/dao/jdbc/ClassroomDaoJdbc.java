@@ -1,5 +1,11 @@
 package ua.com.foxminded.university.dao.jdbc;
 
+import static ua.com.foxminded.university.dao.jdbc.Query.CLASSROOM_GET_ALL;
+import static ua.com.foxminded.university.dao.jdbc.Query.CLASSROOM_GET_BY_ID;
+import static ua.com.foxminded.university.dao.jdbc.Query.CLASSROOM_INSERT;
+import static ua.com.foxminded.university.dao.jdbc.Query.CLASSROOM_UPDATE;
+import static ua.com.foxminded.university.dao.jdbc.Query.CLASSROOM_DELETE;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +21,6 @@ import ua.com.foxminded.university.model.Classroom;
 
 @Repository
 public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
-    private static final String GET_ALL = "select id as classroom_id, name as classroom_name from classrooms";
-    private static final String GET_BY_ID = "select id as classroom_id, name as classroom_name from classrooms where id = :id";
-    private static final String INSERT = "insert into classrooms (name) values (:name)";
-    private static final String UPDATE = "update classrooms set name = :name where id = :id";
-    private static final String DELETE = "delete from classrooms where id = :id";
-    
     private ClassroomMapper classroomMapper;
     
     @Autowired
@@ -30,13 +30,13 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
 
     @Override
     public List<Classroom> getAll() {
-        return jdbcTemplate.query(GET_ALL, classroomMapper);
+        return jdbcTemplate.query(CLASSROOM_GET_ALL, classroomMapper);
     }
 
     @Override
     public Classroom getById(int id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        List<Classroom> classrooms = jdbcTemplate.query(GET_BY_ID, namedParameters, classroomMapper);
+        List<Classroom> classrooms = jdbcTemplate.query(CLASSROOM_GET_BY_ID, namedParameters, classroomMapper);
         if (classrooms.isEmpty()) {
             return new Classroom();
         }
@@ -47,7 +47,7 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
     public Classroom insert(Classroom item) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("name", item.getName());
         KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(INSERT, namedParameters, keyHolder, new String[] { "id" });
+        jdbcTemplate.update(CLASSROOM_INSERT, namedParameters, keyHolder, new String[] { "id" });
         return new Classroom(keyHolder.getKeyAs(Integer.class), item.getName());
     }
 
@@ -56,12 +56,12 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
         SqlParameterSource namedParameters = new MapSqlParameterSource()
                 .addValue("id", item.getId())
                 .addValue("name", item.getName());
-        return jdbcTemplate.update(UPDATE, namedParameters);
+        return jdbcTemplate.update(CLASSROOM_UPDATE, namedParameters);
     }
 
     @Override
     public int delete(int id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.update(DELETE, namedParameters);
+        return jdbcTemplate.update(CLASSROOM_DELETE, namedParameters);
     }
 }
