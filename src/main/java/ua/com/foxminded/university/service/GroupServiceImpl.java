@@ -28,6 +28,11 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public Group getByName(String name) {
+        return groupDao.getByName(name);
+    }
+    
+    @Override
     public Group insert(Group item) {
         return groupDao.insert(item);
     }

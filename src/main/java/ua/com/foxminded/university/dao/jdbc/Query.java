@@ -23,6 +23,7 @@ public class Query {
     
     public static final String GROUP_GET_ALL = "select g.id as group_id, g.name as group_name from groups as g ";
     public static final String GROUP_GET_BY_ID = "select g.id as group_id, g.name as group_name from groups as g where g.id = :id";
+    public static final String GROUP_GET_BY_NAME = "select g.id as group_id, g.name as group_name from groups as g where g.name = :name";
     public static final String GROUP_GET_BY_COURSE_ID = 
             "select "
                 + "g.id as group_id, "

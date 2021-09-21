@@ -33,6 +33,13 @@ class GroupServiceImplTest {
         service.getById(id);
         verify(groupDao, times(1)).getById(id);
     }
+    
+    @Test
+    void testGetByName() {
+        String name = "group";
+        service.getByName(name);
+        verify(groupDao, times(1)).getByName(name);
+    }
 
     @Test
     void testInsert() {
@@ -56,14 +63,14 @@ class GroupServiceImplTest {
     @Test
     void testGetByIdWithDetail() {
         int id = 1;
-        service.getByIdWithDetail(id);;
+        service.getByIdWithDetail(id);
         verify(groupDao, times(1)).getByIdWithDetail(id);
     }
 
     @Test
     void testGetByCourseId() {
         int id = 1;
-        service.getByCourseId(id);;
+        service.getByCourseId(id);
         verify(groupDao, times(1)).getByCourseId(id);
     }
 

@@ -2,6 +2,7 @@ package ua.com.foxminded.university.dao.jdbc;
 
 import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_GET_ALL;
 import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_GET_BY_ID;
+import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_GET_BY_NAME;
 import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_GET_BY_COURSE_ID;
 import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_GET_BY_ID_DETAIL;
 import static ua.com.foxminded.university.dao.jdbc.Query.GROUP_INSERT;
@@ -57,6 +58,16 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
         return groups.get(0);
     }
     
+    @Override
+    public Group getByName(String name) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource("name", name);
+        List<Group> groups = jdbcTemplate.query(GROUP_GET_BY_NAME, namedParameters, groupMapper);
+        if (groups.isEmpty()) {
+            return new Group();
+        }
+        return groups.get(0);
+    }
+
     @Override
     public Group getByIdWithDetail(int id) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);

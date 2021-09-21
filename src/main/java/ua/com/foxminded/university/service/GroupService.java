@@ -8,4 +8,5 @@ public interface GroupService extends GenericService<Group>{
     public Group getByIdWithDetail(int id);
     public List<Group> getByCourseId(int curseId);
     public int updateStudents(Group item);
+    public Group getByName(String name);
 }

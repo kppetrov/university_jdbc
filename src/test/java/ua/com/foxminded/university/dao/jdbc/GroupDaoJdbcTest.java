@@ -52,6 +52,18 @@ class GroupDaoJdbcTest {
                 () -> assertEquals(group2, actual2)
                 );
     }
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void testGetByName() {
+        Group actual1 = dao.getByName(group1.getName());
+        Group actual2 = dao.getByName(group2.getName());
+        assertAll(
+                () -> assertEquals(group1, actual1), 
+                () -> assertEquals(group2, actual2)
+                );
+    }
 
     @Test
     @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
