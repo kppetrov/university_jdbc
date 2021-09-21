@@ -20,6 +20,8 @@ import ua.com.foxminded.university.model.Group;
 
 @ExtendWith(MockitoExtension.class)
 class GroupServiceImplTest {
+    private static final String NAME_IS_TAKEN = "A group with this name already exists";
+    
     @Mock
     private GroupDao groupDao;
     @InjectMocks
@@ -66,7 +68,7 @@ class GroupServiceImplTest {
         ServiceException exception = assertThrows(ServiceException.class, () -> service.insert(group));
         verify(groupDao, times(1)).getByName(group.getName());
         verify(groupDao, times(0)).insert(any());
-        assertEquals("A group with this name already exists", exception.getMessage());
+        assertEquals(NAME_IS_TAKEN, exception.getMessage());
     }
 
     @Test

@@ -10,6 +10,8 @@ import ua.com.foxminded.university.model.Group;
 
 @Service
 public class GroupServiceImpl implements GroupService {
+    private static final String NAME_IS_TAKEN = "A group with this name already exists";
+
     private GroupDao groupDao;
 
     @Autowired
@@ -31,16 +33,16 @@ public class GroupServiceImpl implements GroupService {
     public Group getByName(String name) {
         return groupDao.getByName(name);
     }
-    
+
     @Override
     public Group insert(Group item) {
-        if (nameIsOccupied(item.getName())) {
-            throw new ServiceException("A group with this name already exists");
+        if (nameIsTaken(item.getName())) {
+            throw new ServiceException(NAME_IS_TAKEN);
         }
         return groupDao.insert(item);
     }
-    
-    private boolean nameIsOccupied(String name) {
+
+    private boolean nameIsTaken(String name) {
         Group group = groupDao.getByName(name);
         return group.getId() > 0;
     }
