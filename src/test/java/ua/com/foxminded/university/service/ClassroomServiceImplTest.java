@@ -1,7 +1,12 @@
 package ua.com.foxminded.university.service;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,37 +24,41 @@ class ClassroomServiceImplTest {
     @InjectMocks
     private ClassroomServiceImpl service;
     
-    private Classroom classroom1 = new Classroom(1, "classroom1");
+    private Classroom classroom = new Classroom(1, "classroom");
 
     @Test
     void testGetAll() {
-        service.getAll();
+        List<Classroom> classrooms = new ArrayList<>();
+        classrooms.add(classroom);
+        when(classroomDao.getAll()).thenReturn(classrooms);        
+        List<Classroom> actual = service.getAll();        
         verify(classroomDao, times(1)).getAll();
+        assertEquals(classrooms, actual);
     }
 
     @Test
     void testGetById() {
-        int id = 1;
-        service.getById(id);
-        verify(classroomDao, times(1)).getById(id);
+        when(classroomDao.getById(classroom.getId())).thenReturn(classroom); 
+        Classroom actual = service.getById(classroom.getId());
+        verify(classroomDao, times(1)).getById(classroom.getId());
+        assertEquals(classroom, actual);
     }
 
     @Test
     void testInsert() {
-        service.insert(classroom1);
-        verify(classroomDao, times(1)).insert(classroom1);
+        service.insert(classroom);
+        verify(classroomDao, times(1)).insert(classroom);
     }
 
     @Test
     void testUpdate() {
-        service.update(classroom1);
-        verify(classroomDao, times(1)).update(classroom1);
+        service.update(classroom);
+        verify(classroomDao, times(1)).update(classroom);
     }
 
     @Test
     void testDelete() {
-        int id = 1;
-        service.delete(id);
-        verify(classroomDao, times(1)).delete(id);
+        service.delete(classroom.getId());
+        verify(classroomDao, times(1)).delete(classroom.getId());
     }
 }

@@ -1,9 +1,13 @@
 package ua.com.foxminded.university.service;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,37 +26,41 @@ class StudentServiceImplTest {
     @InjectMocks
     private StudentServiceImpl service;
     
-    private Student student1 = new Student(1, "first_name1", "last_name1", Gender.MAIL, LocalDate.of(2001, 01, 01));
+    private Student student = new Student(1, "first_name", "last_name", Gender.MAIL, LocalDate.of(2001, 01, 01));
     
     @Test
     void testGetAll() {
-        service.getAll();
+        List<Student> students = new ArrayList<>();
+        students.add(student);
+        when(studentDao.getAll()).thenReturn(students);
+        List<Student> actual = service.getAll();
         verify(studentDao, times(1)).getAll();
+        assertEquals(students, actual);
     }
 
     @Test
     void testGetById() {
-        int id = 1;
-        service.getById(id);
-        verify(studentDao, times(1)).getById(id);
+        when(studentDao.getById(student.getId())).thenReturn(student);
+        Student actual = service.getById(student.getId());
+        verify(studentDao, times(1)).getById(student.getId());
+        assertEquals(student, actual);
     }
 
     @Test
     void testInsert() {
-        service.insert(student1);
-        verify(studentDao, times(1)).insert(student1);
+        service.insert(student);
+        verify(studentDao, times(1)).insert(student);
     }
 
     @Test
     void testUpdate() {
-        service.update(student1);
-        verify(studentDao, times(1)).update(student1);
+        service.update(student);
+        verify(studentDao, times(1)).update(student);
     }
 
     @Test
     void testDelete() {
-        int id = 1;
-        service.delete(id);
-        verify(studentDao, times(1)).delete(id);
+        service.delete(student.getId());
+        verify(studentDao, times(1)).delete(student.getId());
     }
 }

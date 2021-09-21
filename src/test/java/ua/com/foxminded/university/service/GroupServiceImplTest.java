@@ -1,7 +1,12 @@
 package ua.com.foxminded.university.service;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,65 +23,75 @@ class GroupServiceImplTest {
     private GroupDao groupDao;
     @InjectMocks
     private GroupServiceImpl service;
-    
-    private Group group1 = new Group(1, "group1");
+
+    private Group group = new Group(1, "group");
 
     @Test
     void testGetAll() {
-        service.getAll();
+        List<Group> groups = new ArrayList<>();
+        groups.add(group);
+        when(groupDao.getAll()).thenReturn(groups);
+        List<Group> actual = service.getAll();
         verify(groupDao, times(1)).getAll();
+        assertEquals(groups, actual);
     }
 
     @Test
     void testGetById() {
-        int id = 1;
-        service.getById(id);
-        verify(groupDao, times(1)).getById(id);
+        when(groupDao.getById(group.getId())).thenReturn(group);
+        Group actual = service.getById(group.getId());
+        verify(groupDao, times(1)).getById(group.getId());
+        assertEquals(group, actual);
     }
-    
+
     @Test
     void testGetByName() {
-        String name = "group";
-        service.getByName(name);
-        verify(groupDao, times(1)).getByName(name);
+        when(groupDao.getByName(group.getName())).thenReturn(group);
+        Group actual = service.getByName(group.getName());
+        verify(groupDao, times(1)).getByName(group.getName());
+        assertEquals(group, actual);
     }
 
     @Test
     void testInsert() {
-        service.insert(group1);
-        verify(groupDao, times(1)).insert(group1);
+        service.insert(group);
+        verify(groupDao, times(1)).insert(group);
     }
 
     @Test
     void testUpdate() {
-        service.update(group1);
-        verify(groupDao, times(1)).update(group1);
+        service.update(group);
+        verify(groupDao, times(1)).update(group);
     }
 
     @Test
     void testDelete() {
-        int id = 1;
-        service.delete(id);
-        verify(groupDao, times(1)).delete(id);
+        service.delete(group.getId());
+        verify(groupDao, times(1)).delete(group.getId());
     }
 
     @Test
     void testGetByIdWithDetail() {
-        int id = 1;
-        service.getByIdWithDetail(id);
-        verify(groupDao, times(1)).getByIdWithDetail(id);
+        when(groupDao.getByIdWithDetail(group.getId())).thenReturn(group);
+        Group actual = service.getByIdWithDetail(group.getId());
+        verify(groupDao, times(1)).getByIdWithDetail(group.getId());
+        assertEquals(group, actual);
     }
 
     @Test
     void testGetByCourseId() {
-        int id = 1;
-        service.getByCourseId(id);
-        verify(groupDao, times(1)).getByCourseId(id);
+        int course_id = 1;
+        List<Group> groups = new ArrayList<>();
+        groups.add(group);
+        when(groupDao.getByCourseId(course_id)).thenReturn(groups);
+        List<Group> actual = service.getByCourseId(course_id);
+        verify(groupDao, times(1)).getByCourseId(course_id);
+        assertEquals(groups, actual);
     }
 
     @Test
     void testUpdateStudents() {
-        service.updateStudents(group1);
-        verify(groupDao, times(1)).updateStudents(group1);
+        service.updateStudents(group);
+        verify(groupDao, times(1)).updateStudents(group);
     }
 }

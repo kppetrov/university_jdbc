@@ -1,9 +1,13 @@
 package ua.com.foxminded.university.service;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,37 +25,41 @@ class PeriodServiceImplTest {
     @InjectMocks
     private PeriodServiceImpl service;
     
-    private Period period1 = new Period(1, "period1", LocalTime.of(8, 0), LocalTime.of(9, 30));
+    private Period period = new Period(1, "period", LocalTime.of(8, 0), LocalTime.of(9, 30));
 
     @Test
     void testGetAll() {
-        service.getAll();
+        List<Period> periods = new ArrayList<>();
+        periods.add(period);
+        when(periodDao.getAll()).thenReturn(periods);
+        List<Period> actual = service.getAll();
         verify(periodDao, times(1)).getAll();
+        assertEquals(periods, actual);
     }
 
     @Test
     void testGetById() {
-        int id = 1;
-        service.getById(id);
-        verify(periodDao, times(1)).getById(id);
+        when(periodDao.getById(period.getId())).thenReturn(period);
+        Period actual = service.getById(period.getId());
+        verify(periodDao, times(1)).getById(period.getId());
+        assertEquals(period, actual);
     }
 
     @Test
     void testInsert() {
-        service.insert(period1);
-        verify(periodDao, times(1)).insert(period1);
+        service.insert(period);
+        verify(periodDao, times(1)).insert(period);
     }
 
     @Test
     void testUpdate() {
-        service.update(period1);
-        verify(periodDao, times(1)).update(period1);
+        service.update(period);
+        verify(periodDao, times(1)).update(period);
     }
 
     @Test
     void testDelete() {
-        int id = 1;
-        service.delete(id);
-        verify(periodDao, times(1)).delete(id);
+        service.delete(period.getId());
+        verify(periodDao, times(1)).delete(period.getId());
     }
 }

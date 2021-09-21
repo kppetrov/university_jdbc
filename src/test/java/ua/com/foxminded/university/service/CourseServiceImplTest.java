@@ -1,7 +1,12 @@
 package ua.com.foxminded.university.service;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,51 +24,56 @@ class CourseServiceImplTest {
     @InjectMocks
     private CourseServiceImpl service;
 
-    private Course course1 = new Course(1, "course1");    
+    private Course course = new Course(1, "course");    
     
     @Test
     void testGetAll() {
-        service.getAll();
+        List<Course> courses = new ArrayList<>();
+        courses.add(course);
+        when(courseDao.getAll()).thenReturn(courses);
+        List<Course> actual = service.getAll();
         verify(courseDao, times(1)).getAll();
+        assertEquals(courses, actual);
     }
 
     @Test
     void testGetById() {
-        int id = 1;
-        service.getById(id);
-        verify(courseDao, times(1)).getById(id);
+        when(courseDao.getById(course.getId())).thenReturn(course);
+        Course actual = service.getById(course.getId());
+        verify(courseDao, times(1)).getById(course.getId());
+        assertEquals(course, actual);
     }
 
     @Test
     void testInsert() {
-        service.insert(course1);
-        verify(courseDao, times(1)).insert(course1);
+        service.insert(course);
+        verify(courseDao, times(1)).insert(course);
     }
 
     @Test
     void testUpdate() {
-        service.update(course1);
-        verify(courseDao, times(1)).update(course1);
+        service.update(course);
+        verify(courseDao, times(1)).update(course);
     }
 
     @Test
     void testDelete() {
-        int id = 1;
-        service.delete(id);
-        verify(courseDao, times(1)).delete(id);
+        service.delete(course.getId());
+        verify(courseDao, times(1)).delete(course.getId());
     }
     
 
     @Test
     void testGetByIdWithDetail() {       
-        int id = 1;
-        service.getByIdWithDetail(id);
-        verify(courseDao, times(1)).getByIdWithDetail(id);
+        when(courseDao.getByIdWithDetail(course.getId())).thenReturn(course);
+        Course actual = service.getByIdWithDetail(course.getId());
+        verify(courseDao, times(1)).getByIdWithDetail(course.getId());
+        assertEquals(course, actual);
     }
 
     @Test
     void testUpdateGroups() {
-        service.updateGroups(course1);
-        verify(courseDao, times(1)).updateGroups(course1); 
+        service.updateGroups(course);
+        verify(courseDao, times(1)).updateGroups(course); 
     }
 }

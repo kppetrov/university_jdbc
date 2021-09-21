@@ -1,10 +1,14 @@
 package ua.com.foxminded.university.service;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,64 +30,79 @@ class LessonServiceImplTest {
     private LessonDao lessonDao;
     @InjectMocks
     private LessonServiceImpl service;
-    
-    private Course course1 = new Course(1, "course1");
-    private Teacher teacher1 = new Teacher(1, "first_name1", "last_name1", Gender.MAIL, LocalDate.of(1971, 01, 01));
-    private Period period1 = new Period(1, "period1", LocalTime.of(8, 0), LocalTime.of(9, 30));
-    private Classroom classroom1 = new Classroom(1, "classroom1");
-    private Lesson lesson1 = new Lesson(1, course1, LocalDate.of(2021, 01, 01), period1, teacher1, classroom1);
+
+    private Course course = new Course(1, "course");
+    private Teacher teacher = new Teacher(1, "first_name", "last_name", Gender.MAIL, LocalDate.of(1971, 01, 01));
+    private Period period = new Period(1, "period", LocalTime.of(8, 0), LocalTime.of(9, 30));
+    private Classroom classroom = new Classroom(1, "classroom");
+    private Lesson lesson = new Lesson(1, course, LocalDate.of(2021, 01, 01), period, teacher, classroom);
 
     @Test
     void testGetAll() {
-        service.getAll();
+        List<Lesson> lessons = new ArrayList<>();
+        lessons.add(lesson);
+        when(lessonDao.getAll()).thenReturn(lessons);
+        List<Lesson> actual = service.getAll();
         verify(lessonDao, times(1)).getAll();
+        assertEquals(lessons, actual);
     }
 
     @Test
     void testGetById() {
-        int id = 1;
-        service.getById(id);
-        verify(lessonDao, times(1)).getById(id);
+        when(lessonDao.getById(lesson.getId())).thenReturn(lesson);
+        Lesson actual = service.getById(lesson.getId());
+        verify(lessonDao, times(1)).getById(lesson.getId());
+        assertEquals(lesson, actual);
     }
 
     @Test
     void testInsert() {
-        service.insert(lesson1);
-        verify(lessonDao, times(1)).insert(lesson1);
+        service.insert(lesson);
+        verify(lessonDao, times(1)).insert(lesson);
     }
 
     @Test
     void testUpdate() {
-        service.update(lesson1);
-        verify(lessonDao, times(1)).update(lesson1);
+        service.update(lesson);
+        verify(lessonDao, times(1)).update(lesson);
     }
 
     @Test
     void testDelete() {
-        int id = 1;
-        service.delete(id);
-        verify(lessonDao, times(1)).delete(id);
+        service.delete(lesson.getId());
+        verify(lessonDao, times(1)).delete(lesson.getId());
     }
-    
+
     @Test
     void testGetByCourseId() {
-        int id = 1;
-        service.getByCourseId(id);
-        verify(lessonDao, times(1)).getByCourseId(id);
+        int course_id = 1;
+        List<Lesson> lessons = new ArrayList<>();
+        lessons.add(lesson);
+        when(lessonDao.getByCourseId(course_id)).thenReturn(lessons);
+        List<Lesson> actual = service.getByCourseId(course_id);
+        verify(lessonDao, times(1)).getByCourseId(course_id);
+        assertEquals(lessons, actual);
     }
-    
-    @Test
 
+    @Test
     void testGetByGroupId() {
-        int id = 1;
-        service.getByGroupId(id);
-        verify(lessonDao, times(1)).getByGroupId(id);
+        int group_id = 1;
+        List<Lesson> lessons = new ArrayList<>();
+        lessons.add(lesson);
+        when(lessonDao.getByGroupId(group_id)).thenReturn(lessons);
+        List<Lesson> actual = service.getByGroupId(group_id);
+        verify(lessonDao, times(1)).getByGroupId(group_id);
+        assertEquals(lessons, actual);
     }
-    
+
     @Test
     void testGetByTeacherId() {
-        int id = 1;
-        service.getByTeacherId(id);
-        verify(lessonDao, times(1)).getByTeacherId(id);
+        int teacher_id = 1;
+        List<Lesson> lessons = new ArrayList<>();
+        lessons.add(lesson);
+        when(lessonDao.getByTeacherId(teacher_id)).thenReturn(lessons);
+        List<Lesson> actual = service.getByTeacherId(teacher_id);
+        verify(lessonDao, times(1)).getByTeacherId(teacher_id);
+        assertEquals(lessons, actual);
     }
 }
