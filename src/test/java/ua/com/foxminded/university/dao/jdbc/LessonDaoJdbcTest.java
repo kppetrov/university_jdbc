@@ -161,4 +161,36 @@ class LessonDaoJdbcTest {
                 () -> assertEquals(teacher2Lessons, actual2)
                 );
     }
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void testGetByDatePeriodIdTeacherId() {
+        Lesson actual1 = dao.getByDatePeriodIdTeacherId(LocalDate.of(2021, 01, 01), period1.getId(), teacher1.getId());
+        Lesson actual2 = dao.getByDatePeriodIdTeacherId(LocalDate.of(2021, 01, 01), period2.getId(), teacher1.getId());
+        Lesson actual3 = dao.getByDatePeriodIdTeacherId(LocalDate.of(2021, 01, 01), period1.getId(), teacher2.getId());
+        Lesson actual4 = dao.getByDatePeriodIdTeacherId(LocalDate.of(2021, 01, 01), period2.getId(), teacher2.getId());
+        assertAll(
+                () -> assertEquals(lesson1, actual1), 
+                () -> assertEquals(lesson2, actual2),
+                () -> assertEquals(lesson3, actual3),
+                () -> assertEquals(lesson4, actual4)
+                );
+    } 
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void testGetByDatePeriodIdClassroomId() {
+        Lesson actual1 = dao.getByDatePeriodIdClassroomId(LocalDate.of(2021, 01, 01), period1.getId(), classroom1.getId());
+        Lesson actual2 = dao.getByDatePeriodIdClassroomId(LocalDate.of(2021, 01, 01), period2.getId(), classroom1.getId());
+        Lesson actual3 = dao.getByDatePeriodIdClassroomId(LocalDate.of(2021, 01, 01), period1.getId(), classroom2.getId());
+        Lesson actual4 = dao.getByDatePeriodIdClassroomId(LocalDate.of(2021, 01, 01), period2.getId(), classroom2.getId());
+        assertAll(
+                () -> assertEquals(lesson1, actual1), 
+                () -> assertEquals(lesson2, actual2),
+                () -> assertEquals(lesson3, actual3),
+                () -> assertEquals(lesson4, actual4)
+                );
+    } 
 }

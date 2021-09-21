@@ -5,11 +5,14 @@ import static ua.com.foxminded.university.dao.jdbc.Query.LESSON_GET_BY_ID;
 import static ua.com.foxminded.university.dao.jdbc.Query.LESSON_GET_BY_COURSE_ID;  
 import static ua.com.foxminded.university.dao.jdbc.Query.LESSON_GET_BY_TEACHER_ID;
 import static ua.com.foxminded.university.dao.jdbc.Query.LESSON_GET_BY_GROUP_ID;
+import static ua.com.foxminded.university.dao.jdbc.Query.LESSON_GET_BY_DATE_PERIOD_ID_CLASSROOM_ID;
+import static ua.com.foxminded.university.dao.jdbc.Query.LESSON_GET_BY_DATE_PERIOD_ID_TEACHER_ID;
 import static ua.com.foxminded.university.dao.jdbc.Query.LESSON_INSERT;
 import static ua.com.foxminded.university.dao.jdbc.Query.LESSON_UPDATE;
 import static ua.com.foxminded.university.dao.jdbc.Query.LESSON_DELETE;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,5 +98,33 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
     public List<Lesson> getByCourseId(int curseId) {
         SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", curseId);
         return jdbcTemplate.query(LESSON_GET_BY_COURSE_ID, namedParameters, lessonMapper);
+    }
+
+    @Override
+    public Lesson getByDatePeriodIdTeacherId(LocalDate date, int periodId, int teacherId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("period_id", periodId)
+                .addValue("teacher_id", teacherId);
+        List<Lesson> lessons = jdbcTemplate.query(LESSON_GET_BY_DATE_PERIOD_ID_TEACHER_ID, namedParameters,
+                lessonMapper);
+        if (lessons.isEmpty()) {
+            return new Lesson();
+        }
+        return lessons.get(0);
+    }
+
+    @Override
+    public Lesson getByDatePeriodIdClassroomId(LocalDate date, int periodId, int classroomId) {
+        SqlParameterSource namedParameters = new MapSqlParameterSource()
+                .addValue("date", date)
+                .addValue("period_id", periodId)
+                .addValue("classroom_id", classroomId);
+        List<Lesson> lessons = jdbcTemplate.query(LESSON_GET_BY_DATE_PERIOD_ID_CLASSROOM_ID, namedParameters,
+                lessonMapper);
+        if (lessons.isEmpty()) {
+            return new Lesson();
+        }
+        return lessons.get(0);
     }
 }

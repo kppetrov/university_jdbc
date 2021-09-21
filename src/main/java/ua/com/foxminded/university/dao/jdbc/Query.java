@@ -86,6 +86,10 @@ public class Query {
     public static final String LESSON_GET_BY_ID = LESSON_GET_ALL + " where l.id = :id";
     public static final String LESSON_GET_BY_COURSE_ID = LESSON_GET_ALL + " where l.course_id = :course_id";  
     public static final String LESSON_GET_BY_TEACHER_ID = LESSON_GET_ALL + " where l.teacher_id = :teacher_id";
+    public static final String LESSON_GET_BY_DATE_PERIOD_ID_CLASSROOM_ID = 
+            LESSON_GET_ALL + " where l.date = :date and l.period_id = :period_id and l.classroom_id = :classroom_id";
+    public static final String LESSON_GET_BY_DATE_PERIOD_ID_TEACHER_ID = 
+            LESSON_GET_ALL + " where l.date = :date and l.period_id = :period_id and l.teacher_id = :teacher_id";
     public static final String LESSON_GET_BY_GROUP_ID = 
             LESSON_GET_ALL
             + " left join course_group as cg "
