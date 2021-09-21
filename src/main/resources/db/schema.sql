@@ -59,7 +59,8 @@ CREATE TABLE lessons
     FOREIGN KEY (teacher_id) REFERENCES teachers (id) ON DELETE CASCADE,
     FOREIGN KEY (classroom_id) REFERENCES classrooms (id) ON DELETE CASCADE,
     FOREIGN KEY (period_id) REFERENCES periods (id) ON DELETE CASCADE,
-    UNIQUE (course_id,teacher_id,classroom_id,period_id,date)
+    UNIQUE (date,period_id,classroom_id),
+    UNIQUE (date,period_id,teacher_id)
 );
 
 CREATE TABLE course_group
