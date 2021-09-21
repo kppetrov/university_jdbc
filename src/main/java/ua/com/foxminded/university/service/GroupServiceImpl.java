@@ -34,7 +34,15 @@ public class GroupServiceImpl implements GroupService {
     
     @Override
     public Group insert(Group item) {
+        if (nameIsOccupied(item.getName())) {
+            throw new ServiceException("A group with this name already exists");
+        }
         return groupDao.insert(item);
+    }
+    
+    private boolean nameIsOccupied(String name) {
+        Group group = groupDao.getByName(name);
+        return group.getId() > 0;
     }
 
     @Override

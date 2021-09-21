@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,8 +55,18 @@ class GroupServiceImplTest {
 
     @Test
     void testInsert() {
+        when(groupDao.getByName(group.getName())).thenReturn(new Group());
         service.insert(group);
         verify(groupDao, times(1)).insert(group);
+    }
+    
+    @Test
+    void shouldThrowExceptionWhenGroupNameAlreadyExists() {
+        when(groupDao.getByName(group.getName())).thenReturn(group);
+        ServiceException exception = assertThrows(ServiceException.class, () -> service.insert(group));
+        verify(groupDao, times(1)).getByName(group.getName());
+        verify(groupDao, times(0)).insert(any());
+        assertEquals("A group with this name already exists", exception.getMessage());
     }
 
     @Test
