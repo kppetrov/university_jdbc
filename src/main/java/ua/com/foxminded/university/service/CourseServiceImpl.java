@@ -19,36 +19,64 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<Course> getAll() {
-        return courseDao.getAll();
+        try {
+            return courseDao.getAll();
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public Course getById(int id) {
-        return courseDao.getById(id);
+        try {
+            return courseDao.getById(id);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public Course insert(Course item) {
-        return courseDao.insert(item);
+        try {
+            return courseDao.insert(item);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public int update(Course item) {
-        return courseDao.update(item);
+        try {
+            return courseDao.update(item);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public int delete(int id) {
-        return courseDao.delete(id);
+        try {
+            return courseDao.delete(id);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public Course getByIdWithDetail(int id) {
-        return courseDao.getByIdWithDetail(id);
+        try {
+            return courseDao.getByIdWithDetail(id);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public int updateGroups(Course item) {
-        return courseDao.updateGroups(item);
+        try {
+            return courseDao.updateGroups(item);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 }

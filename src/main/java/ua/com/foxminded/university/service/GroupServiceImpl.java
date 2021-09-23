@@ -2,6 +2,8 @@ package ua.com.foxminded.university.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -10,7 +12,8 @@ import ua.com.foxminded.university.model.Group;
 
 @Service
 public class GroupServiceImpl implements GroupService {
-    private static final String NAME_IS_TAKEN = "A group with this name already exists";
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroupServiceImpl.class);    
+    private static final String NAME_IS_TAKEN = "Cannot create a group. A group with this name(%s) already exists";
 
     private GroupDao groupDao;
 
@@ -21,54 +24,96 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public List<Group> getAll() {
-        return groupDao.getAll();
+        try {
+            return groupDao.getAll();
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public Group getById(int id) {
-        return groupDao.getById(id);
+        try {
+            return groupDao.getById(id);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public Group getByName(String name) {
-        return groupDao.getByName(name);
+        try {
+            return groupDao.getByName(name);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public Group insert(Group item) {
         if (nameIsTaken(item.getName())) {
-            throw new ServiceException(NAME_IS_TAKEN);
+            String msg = String.format(NAME_IS_TAKEN, item.getName());
+            LOGGER.info(msg);
+            throw new ServiceException(msg);
         }
-        return groupDao.insert(item);
+        try {
+            return groupDao.insert(item);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     private boolean nameIsTaken(String name) {
-        Group group = groupDao.getByName(name);
-        return group.getId() > 0;
+        try {
+            Group group = groupDao.getByName(name);
+            return group.getId() > 0;
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public int update(Group item) {
-        return groupDao.update(item);
+        try {
+            return groupDao.update(item);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public int delete(int id) {
-        return groupDao.delete(id);
+        try {
+            return groupDao.delete(id);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public Group getByIdWithDetail(int id) {
-        return groupDao.getByIdWithDetail(id);
+        try {
+            return groupDao.getByIdWithDetail(id);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public List<Group> getByCourseId(int curseId) {
-        return groupDao.getByCourseId(curseId);
+        try {
+            return groupDao.getByCourseId(curseId);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public int updateStudents(Group item) {
-        return groupDao.updateStudents(item);
+        try {
+            return groupDao.updateStudents(item);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 }

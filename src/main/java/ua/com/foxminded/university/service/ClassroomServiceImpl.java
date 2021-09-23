@@ -9,7 +9,7 @@ import ua.com.foxminded.university.dao.ClassroomDao;
 import ua.com.foxminded.university.model.Classroom;
 
 @Service
-public class ClassroomServiceImpl implements ClassroomService {
+public class ClassroomServiceImpl implements ClassroomService {  
     private ClassroomDao classroomDao;
     
     @Autowired
@@ -19,26 +19,46 @@ public class ClassroomServiceImpl implements ClassroomService {
 
     @Override
     public List<Classroom> getAll() {
-        return classroomDao.getAll();
+        try {
+            return classroomDao.getAll();
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public Classroom getById(int id) {
-        return classroomDao.getById(id);
+        try {
+            return classroomDao.getById(id);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public Classroom insert(Classroom item) {
-        return classroomDao.insert(item);
+        try {
+            return classroomDao.insert(item);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public int update(Classroom item) {
-        return classroomDao.update(item);
+        try {
+            return classroomDao.update(item);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 
     @Override
     public int delete(int id) {
-        return classroomDao.delete(id);
+        try {
+            return classroomDao.delete(id);
+        } catch (Exception e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
     }
 }
