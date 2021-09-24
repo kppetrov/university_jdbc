@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import ua.com.foxminded.university.dao.PeriodDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.PeriodMapper;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Period;
 
 @Repository
@@ -31,43 +32,64 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
 
     @Override
     public List<Period> getAll() {
-        return jdbcTemplate.query(PERIOD_GET_ALL, periodMapper);
+        try {
+            return jdbcTemplate.query(PERIOD_GET_ALL, periodMapper);
+        } catch (Exception e) {
+            throw new DaoException("Cannot get all periods", e);
+        }  
     }
 
     @Override
-    public Period getById(int id) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        List<Period> periods = jdbcTemplate.query(PERIOD_GET_BY_ID, namedParameters, periodMapper);
-        if (periods.isEmpty()) {
-            return new Period();
+    public Period getById(int id) { 
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+            List<Period> periods = jdbcTemplate.query(PERIOD_GET_BY_ID, namedParameters, periodMapper);
+            if (periods.isEmpty()) {
+                return new Period();
+            }
+            return periods.get(0);
+        } catch (Exception e) {
+
+            throw new DaoException("Cannot get period by id. id = " + id, e);
         }
-        return periods.get(0);
     }
 
     @Override
     public Period insert(Period item) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("name", item.getName())
-                .addValue("start_time", Time.valueOf(item.getStart()))
-                .addValue("end_time", Time.valueOf(item.getEnd()));
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(PERIOD_INSERT, namedParameters, keyHolder, new String[] { "id" });
-        return new Period(keyHolder.getKeyAs(Integer.class), item.getName(), item.getStart(), item.getEnd());
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("name", item.getName())
+                    .addValue("start_time", Time.valueOf(item.getStart()))
+                    .addValue("end_time", Time.valueOf(item.getEnd()));
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(PERIOD_INSERT, namedParameters, keyHolder, new String[] { "id" });
+            return new Period(keyHolder.getKeyAs(Integer.class), item.getName(), item.getStart(), item.getEnd());
+        } catch (Exception e) {            
+            throw new DaoException("Cannot create period. " + item, e);
+        }
     }
 
     @Override
-    public int update(Period item) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("id", item.getId())
-                .addValue("name", item.getName())
-                .addValue("start_time", Time.valueOf(item.getStart()))
-                .addValue("end_time", Time.valueOf(item.getEnd()));
-        return jdbcTemplate.update(PERIOD_UPDATE, namedParameters);
+    public int update(Period item) {        
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("id", item.getId())
+                    .addValue("name", item.getName())
+                    .addValue("start_time", Time.valueOf(item.getStart()))
+                    .addValue("end_time", Time.valueOf(item.getEnd()));
+            return jdbcTemplate.update(PERIOD_UPDATE, namedParameters);
+        } catch (Exception e) {
+            throw new DaoException("Cannot update period. " + item, e);
+        }
     }
 
     @Override
     public int delete(int id) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.update(PERIOD_DELETE, namedParameters);
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+            return jdbcTemplate.update(PERIOD_DELETE, namedParameters);
+        } catch (Exception e) {            
+            throw new DaoException("Cannot remove classroom. id = " + id, e);
+        }
     }
 }

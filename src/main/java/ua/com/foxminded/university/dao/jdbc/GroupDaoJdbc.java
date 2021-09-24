@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -24,17 +22,15 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import ua.com.foxminded.university.dao.DaoException;
 import ua.com.foxminded.university.dao.GroupDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.GroupMapper;
 import ua.com.foxminded.university.dao.jdbc.mappers.GroupWithStudentsExtractor;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Group;
 import ua.com.foxminded.university.model.Student;
 
 @Repository
 public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
-    private static final Logger LOGGER = LoggerFactory.getLogger(GroupDaoJdbc.class);
-    
     private GroupMapper groupMapper;
     private GroupWithStudentsExtractor groupWithDetailExtractor;
     
@@ -53,9 +49,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
         try {
             return jdbcTemplate.query(GROUP_GET_ALL, groupMapper);
         } catch (Exception e) {
-            String msg = "Cannot get all groups";
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot get all groups", e);
         }   
     }
 
@@ -69,9 +63,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
             }
             return groups.get(0);
         } catch (Exception e) {
-            String msg = "Cannot get group by id. Id = " + id;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot get group by id. id = " + id, e);
         }
     }
     
@@ -85,9 +77,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
             }
             return groups.get(0);
         } catch (Exception e) {            
-            String msg = "Cannot get group by name. Name = " + name;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot get group by name. Name = " + name, e);
         }
     }
 
@@ -97,9 +87,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.query(GROUP_GET_BY_ID_DETAIL, namedParameters, groupWithDetailExtractor);
         } catch (Exception e) {
-            String msg = "Cannot get group by id with detail. Id = " + id;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot get group by id with detail. Id = " + id, e);
         }
     }
     
@@ -109,9 +97,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
             SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", curseId);
             return jdbcTemplate.query(GROUP_GET_BY_COURSE_ID, namedParameters, groupMapper);
         } catch (Exception e) {
-            String msg = "Cannot get group by course id. Course id = " + curseId;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot get group by course id. Course id = " + curseId, e);
         }
     }
 
@@ -123,9 +109,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
             jdbcTemplate.update(GROUP_INSERT, namedParameters, keyHolder, new String[] { "id" });
             return new Group(keyHolder.getKeyAs(Integer.class), item.getName(), new ArrayList<>());
         } catch (Exception e) {            
-            String msg = "Cannot create group. " + item;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot create group. " + item, e);
         }
     }
 
@@ -137,9 +121,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
                     .addValue("name", item.getName());
             return jdbcTemplate.update(GROUP_UPDATE, namedParameters);
         } catch (Exception e) {
-            String msg = "Cannot update group. " + item;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot update group. " + item, e);
         }
     }
 
@@ -149,9 +131,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(GROUP_DELETE, namedParameters);
         } catch (Exception e) {            
-            String msg = "Cannot remove group. Id = " + id;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot remove group. Id = " + id, e);
         }
     }
 
@@ -168,9 +148,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
             result += jdbcTemplate.update(GROUP_ADD_STUDENTS_TO_GROUP, namedParameters);     
             return result;
         } catch (Exception e) {
-            String msg = "Cannot update group students. " + item;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot update group students. " + item, e);
         }
     }
 }

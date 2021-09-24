@@ -1,4 +1,4 @@
-package ua.com.foxminded.university.service;
+package ua.com.foxminded.university.exception;
 
 public class ServiceException extends RuntimeException {
     private static final long serialVersionUID = 6340312737275057055L;

@@ -1,4 +1,4 @@
-package ua.com.foxminded.university.service;
+package ua.com.foxminded.university.service.impl;
 
 import java.util.List;
 
@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ua.com.foxminded.university.dao.CourseDao;
+import ua.com.foxminded.university.exception.ServiceException;
 import ua.com.foxminded.university.model.Course;
+import ua.com.foxminded.university.service.CourseService;
 
 @Service
 public class CourseServiceImpl implements CourseService {

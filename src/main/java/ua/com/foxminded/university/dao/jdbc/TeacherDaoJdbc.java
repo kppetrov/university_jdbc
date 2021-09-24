@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import ua.com.foxminded.university.dao.TeacherDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.TeacherMapper;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Teacher;
 
 @Repository
@@ -31,46 +32,67 @@ public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {
 
     @Override
     public List<Teacher> getAll() {
-        return jdbcTemplate.query(TEACHER_GET_ALL, teacherMapper);
+        try {
+            return jdbcTemplate.query(TEACHER_GET_ALL, teacherMapper);
+        } catch (Exception e) {
+            throw new DaoException("Cannot get all teachers", e);
+        }  
     }
 
     @Override
     public Teacher getById(int id) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        List<Teacher> teachers = jdbcTemplate.query(TEACHER_GET_BY_ID, namedParameters, teacherMapper);
-        if (teachers.isEmpty()) {
-            return new Teacher();
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+            List<Teacher> teachers = jdbcTemplate.query(TEACHER_GET_BY_ID, namedParameters, teacherMapper);
+            if (teachers.isEmpty()) {
+                return new Teacher();
+            }
+            return teachers.get(0);
+        } catch (Exception e) {
+
+            throw new DaoException("Cannot get teacher by id. id = " + id, e);
         }
-        return teachers.get(0);
     }
 
     @Override
     public Teacher insert(Teacher item) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("first_name", item.getFirstName())
-                .addValue("last_name", item.getLastName())
-                .addValue("gender", item.getGender().getValue())
-                .addValue("birthdate", Date.valueOf(item.getBirthdate()));
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(TEACHER_INSERT, namedParameters, keyHolder, new String[] { "id" });
-        return new Teacher(keyHolder.getKeyAs(Integer.class), item.getFirstName(), item.getLastName(), item.getGender(),
-                item.getBirthdate());
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("first_name", item.getFirstName())
+                    .addValue("last_name", item.getLastName())
+                    .addValue("gender", item.getGender().getValue())
+                    .addValue("birthdate", Date.valueOf(item.getBirthdate()));
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(TEACHER_INSERT, namedParameters, keyHolder, new String[] { "id" });
+            return new Teacher(keyHolder.getKeyAs(Integer.class), item.getFirstName(), item.getLastName(), item.getGender(),
+                    item.getBirthdate());
+        } catch (Exception e) {            
+            throw new DaoException("Cannot create teacher. " + item, e);
+        }
     }
 
     @Override
     public int update(Teacher item) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("id", item.getId())                
-                .addValue("first_name", item.getFirstName())
-                .addValue("last_name", item.getLastName())
-                .addValue("gender", item.getGender().getValue())
-                .addValue("birthdate", Date.valueOf(item.getBirthdate()));
-        return jdbcTemplate.update(TEACHER_UPDATE, namedParameters);
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("id", item.getId())                
+                    .addValue("first_name", item.getFirstName())
+                    .addValue("last_name", item.getLastName())
+                    .addValue("gender", item.getGender().getValue())
+                    .addValue("birthdate", Date.valueOf(item.getBirthdate()));
+            return jdbcTemplate.update(TEACHER_UPDATE, namedParameters);
+        } catch (Exception e) {
+            throw new DaoException("Cannot update teacher. " + item, e);
+        }
     }
 
     @Override
     public int delete(int id) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.update(TEACHER_DELETE, namedParameters);
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+            return jdbcTemplate.update(TEACHER_DELETE, namedParameters);
+        } catch (Exception e) {            
+            throw new DaoException("Cannot remove teacher. id = " + id, e);
+        }
     }
 }

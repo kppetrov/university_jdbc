@@ -11,8 +11,6 @@ import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_ADD_GROUP_TO_COU
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -21,17 +19,15 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import ua.com.foxminded.university.dao.CourseDao;
-import ua.com.foxminded.university.dao.DaoException;
 import ua.com.foxminded.university.dao.GroupDao;
 import ua.com.foxminded.university.dao.LessonDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.CourseMapper;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Course;
 import ua.com.foxminded.university.model.Group;
 
 @Repository
 public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
-    private static final Logger LOGGER = LoggerFactory.getLogger(CourseDaoJdbc.class);
-    
     private CourseMapper courseMapper;
     private LessonDao lessonDao;
     private GroupDao groupDao;   
@@ -56,9 +52,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
         try {
             return jdbcTemplate.query(COURSE_GET_ALL, courseMapper);
         } catch (Exception e) {
-            String msg = "Cannot get all courses";
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot get all courses", e);
         } 
     }
 
@@ -72,9 +66,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
             }
             return courses.get(0);
         } catch (Exception e) {
-            String msg = "Cannot get course by id. Id = " + id;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot get course by id. id = " + id, e);
         }
     }
     
@@ -91,9 +83,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
             course.setLessons(lessonDao.getByCourseId(id));
             return course; 
         } catch (Exception e) {
-            String msg = "Cannot get classroom by id with detail. Id = " + id;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot get classroom by id with detail. id = " + id, e);
         }
     }
 
@@ -108,9 +98,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
             course.setName(item.getName());
             return course;
         } catch (Exception e) {            
-            String msg = "Cannot create course. " + item;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot create course. " + item, e);
         }
     }
 
@@ -122,9 +110,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
                     .addValue("name", item.getName());
             return jdbcTemplate.update(COURSE_UPDATE, namedParameters);
         } catch (Exception e) {
-            String msg = "Cannot update course. " + item;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot update course. " + item, e);
         }
     }
 
@@ -134,11 +120,8 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(COURSE_DELETE, namedParameters);
 
-        } catch (Exception e) {            
-            String msg = "Cannot remove course. Id = " + id;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
-
+        } catch (Exception e) {
+            throw new DaoException("Cannot remove course. id = " + id, e);
         }
     }
 
@@ -155,9 +138,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
             result += jdbcTemplate.update(COURSE_ADD_GROUP_TO_COURSE, namedParameters);        
             return result;
         } catch (Exception e) {
-            String msg = "Cannot update course groups. " + item;
-            LOGGER.error(msg, e);
-            throw new DaoException(msg, e);
+            throw new DaoException("Cannot update course groups. " + item, e);
         }
     }    
 }

@@ -1,4 +1,4 @@
-package ua.com.foxminded.university.dao;
+package ua.com.foxminded.university.exception;
 
 public class DaoException extends RuntimeException {
     private static final long serialVersionUID = 8413358329021198249L;

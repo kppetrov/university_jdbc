@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 
 import ua.com.foxminded.university.dao.LessonDao;
 import ua.com.foxminded.university.dao.jdbc.mappers.LessonMapper;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Lesson;
 
 @Repository
@@ -37,94 +38,140 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
 
     @Override
     public List<Lesson> getAll() {
-        return jdbcTemplate.query(LESSON_GET_ALL, lessonMapper);
+        try {
+            return jdbcTemplate.query(LESSON_GET_ALL, lessonMapper);
+        } catch (Exception e) {
+            throw new DaoException("Cannot get all lessons", e);
+        }  
     }
 
     @Override
     public Lesson getById(int id) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        List<Lesson> lessons = jdbcTemplate.query(LESSON_GET_BY_ID, namedParameters, lessonMapper);
-        if (lessons.isEmpty()) {
-            return new Lesson();
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+            List<Lesson> lessons = jdbcTemplate.query(LESSON_GET_BY_ID, namedParameters, lessonMapper);
+            if (lessons.isEmpty()) {
+                return new Lesson();
+            }
+            return lessons.get(0);
+        } catch (Exception e) {
+            throw new DaoException("Cannot get lesson by id. id = " + id, e);
         }
-        return lessons.get(0);
     } 
 
     @Override
     public Lesson insert(Lesson item) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("date", Date.valueOf(item.getDate()))
-                .addValue("course_id", item.getCourse().getId())
-                .addValue("period_id", item.getPeriod().getId())
-                .addValue("classroom_id", item.getClassroom().getId())
-                .addValue("teacher_id", item.getTeacher().getId());
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-        jdbcTemplate.update(LESSON_INSERT, namedParameters, keyHolder, new String[] { "id" });
-        return new Lesson(keyHolder.getKeyAs(Integer.class), item.getCourse(), item.getDate(), item.getPeriod(),
-                item.getTeacher(), item.getClassroom());
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("date", Date.valueOf(item.getDate()))
+                    .addValue("course_id", item.getCourse().getId())
+                    .addValue("period_id", item.getPeriod().getId())
+                    .addValue("classroom_id", item.getClassroom().getId())
+                    .addValue("teacher_id", item.getTeacher().getId());
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            jdbcTemplate.update(LESSON_INSERT, namedParameters, keyHolder, new String[] { "id" });
+            return new Lesson(keyHolder.getKeyAs(Integer.class), item.getCourse(), item.getDate(), item.getPeriod(),
+                    item.getTeacher(), item.getClassroom());
+        } catch (Exception e) {            
+            throw new DaoException("Cannot create lesson. " + item, e);
+        }
     }
 
     @Override
     public int update(Lesson item) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("id", item.getId())
-                .addValue("date", Date.valueOf(item.getDate()))
-                .addValue("course_id", item.getCourse().getId())
-                .addValue("period_id", item.getPeriod().getId())
-                .addValue("classroom_id", item.getClassroom().getId())
-                .addValue("teacher_id", item.getTeacher().getId());
-        return jdbcTemplate.update(LESSON_UPDATE, namedParameters);
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("id", item.getId())
+                    .addValue("date", Date.valueOf(item.getDate()))
+                    .addValue("course_id", item.getCourse().getId())
+                    .addValue("period_id", item.getPeriod().getId())
+                    .addValue("classroom_id", item.getClassroom().getId())
+                    .addValue("teacher_id", item.getTeacher().getId());
+            return jdbcTemplate.update(LESSON_UPDATE, namedParameters);
+        } catch (Exception e) {
+            throw new DaoException("Cannot update lesson. " + item, e);
+        }
     }
 
     @Override
     public int delete(int id) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-        return jdbcTemplate.update(LESSON_DELETE, namedParameters);
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+            return jdbcTemplate.update(LESSON_DELETE, namedParameters);
+        } catch (Exception e) {            
+            throw new DaoException("Cannot remove lesson. id = " + id, e);
+        }
     }
     
     @Override
     public List<Lesson> getByGroupId(int groupId) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource("group_id", groupId);
-        return jdbcTemplate.query(LESSON_GET_BY_GROUP_ID, namedParameters, lessonMapper);
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource("group_id", groupId);
+            return jdbcTemplate.query(LESSON_GET_BY_GROUP_ID, namedParameters, lessonMapper);
+        } catch (Exception e) {
+            throw new DaoException("Cannot get lesson by groupId. groupId = " + groupId, e);
+        }
     }
 
     @Override
     public List<Lesson> getByTeacherId(int teacherId) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource("teacher_id", teacherId);
-        return jdbcTemplate.query(LESSON_GET_BY_TEACHER_ID, namedParameters, lessonMapper);
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource("teacher_id", teacherId);
+            return jdbcTemplate.query(LESSON_GET_BY_TEACHER_ID, namedParameters, lessonMapper);
+        } catch (Exception e) {
+            throw new DaoException("Cannot get lesson by teacherId. teacherId = " + teacherId, e);
+        }
     }
 
     @Override
     public List<Lesson> getByCourseId(int curseId) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", curseId);
-        return jdbcTemplate.query(LESSON_GET_BY_COURSE_ID, namedParameters, lessonMapper);
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", curseId);
+            return jdbcTemplate.query(LESSON_GET_BY_COURSE_ID, namedParameters, lessonMapper);
+        } catch (Exception e) {
+            throw new DaoException("Cannot get lesson by curseId. curseId = " + curseId, e);
+        }
     }
 
     @Override
     public Lesson getByDatePeriodIdTeacherId(LocalDate date, int periodId, int teacherId) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("date", date)
-                .addValue("period_id", periodId)
-                .addValue("teacher_id", teacherId);
-        List<Lesson> lessons = jdbcTemplate.query(LESSON_GET_BY_DATE_PERIOD_ID_TEACHER_ID, namedParameters,
-                lessonMapper);
-        if (lessons.isEmpty()) {
-            return new Lesson();
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("date", date)
+                    .addValue("period_id", periodId)
+                    .addValue("teacher_id", teacherId);
+            List<Lesson> lessons = jdbcTemplate.query(LESSON_GET_BY_DATE_PERIOD_ID_TEACHER_ID, namedParameters,
+                    lessonMapper);
+            if (lessons.isEmpty()) {
+                return new Lesson();
+            }
+            return lessons.get(0);
+        } catch (Exception e) {
+            String msg = String.format(
+                    "Cannot get lesson by date, periodId, teacherId. Date = %s; periodId = %d; teacherId = %d", 
+                    date, periodId, teacherId);
+            throw new DaoException(msg, e);
         }
-        return lessons.get(0);
     }
 
     @Override
     public Lesson getByDatePeriodIdClassroomId(LocalDate date, int periodId, int classroomId) {
-        SqlParameterSource namedParameters = new MapSqlParameterSource()
-                .addValue("date", date)
-                .addValue("period_id", periodId)
-                .addValue("classroom_id", classroomId);
-        List<Lesson> lessons = jdbcTemplate.query(LESSON_GET_BY_DATE_PERIOD_ID_CLASSROOM_ID, namedParameters,
-                lessonMapper);
-        if (lessons.isEmpty()) {
-            return new Lesson();
+        try {
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("date", date)
+                    .addValue("period_id", periodId)
+                    .addValue("classroom_id", classroomId);
+            List<Lesson> lessons = jdbcTemplate.query(LESSON_GET_BY_DATE_PERIOD_ID_CLASSROOM_ID, namedParameters,
+                    lessonMapper);
+            if (lessons.isEmpty()) {
+                return new Lesson();
+            }
+            return lessons.get(0);
+        } catch (Exception e) {
+            String msg = String.format(
+                    "Cannot get lesson by date, periodId, classroomId. Date = %s; periodId = %d; classroomId = %d", 
+                    date, periodId, classroomId);
+            throw new DaoException(msg, e);
         }
-        return lessons.get(0);
     }
 }
