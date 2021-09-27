@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -32,6 +34,7 @@ import ua.com.foxminded.university.model.Student;
 
 @Repository
 public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroupDaoJdbc.class);
     private GroupMapper groupMapper;
     private GroupWithStudentsExtractor groupWithDetailExtractor;
     
@@ -47,6 +50,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
 
     @Override
     public List<Group> getAll() {
+        LOGGER.debug("Getting all groups");
         try {
             return jdbcTemplate.query(GROUP_GET_ALL, groupMapper);
         } catch (DataAccessException e) {
@@ -56,6 +60,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
 
     @Override
     public Group getById(int id) {
+        LOGGER.debug("Getting group by id");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             List<Group> groups = jdbcTemplate.query(GROUP_GET_BY_ID, namedParameters, groupMapper);
@@ -70,6 +75,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
     
     @Override
     public Group getByName(String name) {
+        LOGGER.debug("Getting group by name");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("name", name);
             List<Group> groups = jdbcTemplate.query(GROUP_GET_BY_NAME, namedParameters, groupMapper);
@@ -84,6 +90,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
 
     @Override
     public Group getByIdWithDetail(int id) {
+        LOGGER.debug("Getting group by id with detail");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.query(GROUP_GET_BY_ID_DETAIL, namedParameters, groupWithDetailExtractor);
@@ -94,6 +101,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
     
     @Override
     public List<Group> getByCourseId(int curseId) {
+        LOGGER.debug("Getting group by curseId");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", curseId);
             return jdbcTemplate.query(GROUP_GET_BY_COURSE_ID, namedParameters, groupMapper);
@@ -104,6 +112,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
 
     @Override
     public Group insert(Group item) {
+        LOGGER.debug("Creating group");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("name", item.getName());
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -116,6 +125,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
 
     @Override
     public int update(Group item) {
+        LOGGER.debug("Updating group");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
                     .addValue("id", item.getId())
@@ -127,7 +137,8 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
     }
 
     @Override
-    public int delete(int id) {
+    public int delete(int id) {        
+        LOGGER.debug("Removung group");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(GROUP_DELETE, namedParameters);
@@ -139,6 +150,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
     
     @Override
     public int updateStudents(Group item) {
+        LOGGER.debug("Updating group students");
         try {
             int result = 0;    
             List<Integer> studentsIds = item.getStudents().stream().map(Student::getId).collect(Collectors.toList());        

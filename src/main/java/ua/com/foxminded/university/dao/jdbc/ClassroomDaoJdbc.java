@@ -8,6 +8,8 @@ import static ua.com.foxminded.university.dao.jdbc.Query.CLASSROOM_DELETE;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -23,6 +25,7 @@ import ua.com.foxminded.university.model.Classroom;
 
 @Repository
 public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassroomDaoJdbc.class);    
     private ClassroomMapper classroomMapper;
 
     @Autowired
@@ -32,6 +35,7 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
 
     @Override
     public List<Classroom> getAll() {
+        LOGGER.debug("Getting all classrooms");
         try {
             return jdbcTemplate.query(CLASSROOM_GET_ALL, classroomMapper);
         } catch (DataAccessException e) {
@@ -41,7 +45,8 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
     }
 
     @Override
-    public Classroom getById(int id) {        
+    public Classroom getById(int id) {  
+        LOGGER.debug("Getting classroom by id");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             List<Classroom> classrooms = jdbcTemplate.query(CLASSROOM_GET_BY_ID, namedParameters, classroomMapper);
@@ -56,6 +61,7 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
 
     @Override
     public Classroom insert(Classroom item) {
+        LOGGER.debug("Creating classroom");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("name", item.getName());
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -68,6 +74,7 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
 
     @Override
     public int update(Classroom item) {
+        LOGGER.debug("Updating classroom");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", item.getId()).addValue("name",
                     item.getName());
@@ -79,6 +86,7 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
 
     @Override
     public int delete(int id) {
+        LOGGER.debug("Removung classroom");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(CLASSROOM_DELETE, namedParameters);

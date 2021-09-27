@@ -9,6 +9,8 @@ import static ua.com.foxminded.university.dao.jdbc.Query.PERIOD_DELETE;
 import java.sql.Time;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -23,7 +25,8 @@ import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Period;
 
 @Repository
-public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {    
+public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao { 
+    private static final Logger LOGGER = LoggerFactory.getLogger(PeriodDaoJdbc.class);
     private PeriodMapper periodMapper;
 
     @Autowired
@@ -33,6 +36,7 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
 
     @Override
     public List<Period> getAll() {
+        LOGGER.debug("Getting all periods");
         try {
             return jdbcTemplate.query(PERIOD_GET_ALL, periodMapper);
         } catch (DataAccessException e) {
@@ -42,6 +46,7 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
 
     @Override
     public Period getById(int id) { 
+        LOGGER.debug("Getting period by id");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             List<Period> periods = jdbcTemplate.query(PERIOD_GET_BY_ID, namedParameters, periodMapper);            
@@ -56,6 +61,7 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
 
     @Override
     public Period insert(Period item) {
+        LOGGER.debug("Creating period");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
                     .addValue("name", item.getName())
@@ -70,7 +76,8 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
     }
 
     @Override
-    public int update(Period item) {        
+    public int update(Period item) { 
+        LOGGER.debug("Updating period");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
                     .addValue("id", item.getId())
@@ -85,6 +92,7 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
 
     @Override
     public int delete(int id) {
+        LOGGER.debug("Removung period");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);            
             return jdbcTemplate.update(PERIOD_DELETE, namedParameters);

@@ -11,6 +11,8 @@ import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_ADD_GROUP_TO_COU
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -29,6 +31,7 @@ import ua.com.foxminded.university.model.Group;
 
 @Repository
 public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CourseDaoJdbc.class);
     private CourseMapper courseMapper;
     private LessonDao lessonDao;
     private GroupDao groupDao;   
@@ -49,7 +52,8 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
     }
     
     @Override
-    public List<Course> getAll() {        
+    public List<Course> getAll() {
+        LOGGER.debug("Getting all courses");
         try {
             return jdbcTemplate.query(COURSE_GET_ALL, courseMapper);
         } catch (DataAccessException e) {
@@ -58,7 +62,8 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
     }
 
     @Override
-    public Course getById(int id) {        
+    public Course getById(int id) {  
+        LOGGER.debug("Getting course by id");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             List<Course> courses = jdbcTemplate.query(COURSE_GET_BY_ID, namedParameters, courseMapper);
@@ -73,6 +78,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
     
     @Override
     public Course getByIdWithDetail(int id) {
+        LOGGER.debug("Getting course by id with detail");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             List<Course> courses = jdbcTemplate.query(COURSE_GET_BY_ID, namedParameters, courseMapper);
@@ -90,6 +96,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
 
     @Override
     public Course insert(Course item) {
+        LOGGER.debug("Creating course");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("name", item.getName());
             KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -104,7 +111,8 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
     }
 
     @Override
-    public int update(Course item) {
+    public int update(Course item) {        
+        LOGGER.debug("Updating course");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
                     .addValue("id", item.getId())
@@ -117,6 +125,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
 
     @Override
     public int delete(int id) {
+        LOGGER.debug("Removung course");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(COURSE_DELETE, namedParameters);
@@ -127,6 +136,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
 
     @Override
     public int updateGroups(Course item) {
+        LOGGER.debug("Updating course groups");
         try {
             int result = 0;    
             List<Integer> groupIds = item.getGroups().stream().map(Group::getId).collect(Collectors.toList());        

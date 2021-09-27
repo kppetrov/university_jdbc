@@ -15,6 +15,8 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -30,6 +32,7 @@ import ua.com.foxminded.university.model.Lesson;
 
 @Repository
 public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LessonDaoJdbc.class);
     private LessonMapper lessonMapper;
     
     @Autowired
@@ -39,6 +42,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
 
     @Override
     public List<Lesson> getAll() {
+        LOGGER.debug("Getting all lessons");
         try {
             return jdbcTemplate.query(LESSON_GET_ALL, lessonMapper);
         } catch (DataAccessException e) {
@@ -48,6 +52,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
 
     @Override
     public Lesson getById(int id) {
+        LOGGER.debug("Getting lesson by id");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             List<Lesson> lessons = jdbcTemplate.query(LESSON_GET_BY_ID, namedParameters, lessonMapper);
@@ -62,6 +67,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
 
     @Override
     public Lesson insert(Lesson item) {
+        LOGGER.debug("Creating lesson");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
                     .addValue("date", Date.valueOf(item.getDate()))
@@ -80,6 +86,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
 
     @Override
     public int update(Lesson item) {
+        LOGGER.debug("Updating lesson");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
                     .addValue("id", item.getId())
@@ -96,6 +103,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
 
     @Override
     public int delete(int id) {
+        LOGGER.debug("Removung lesson");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(LESSON_DELETE, namedParameters);
@@ -106,6 +114,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
     
     @Override
     public List<Lesson> getByGroupId(int groupId) {
+        LOGGER.debug("Getting lessons by groupId");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("group_id", groupId);
             return jdbcTemplate.query(LESSON_GET_BY_GROUP_ID, namedParameters, lessonMapper);
@@ -116,6 +125,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
 
     @Override
     public List<Lesson> getByTeacherId(int teacherId) {
+        LOGGER.debug("Getting lessons by teacherId");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("teacher_id", teacherId);
             return jdbcTemplate.query(LESSON_GET_BY_TEACHER_ID, namedParameters, lessonMapper);
@@ -126,6 +136,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
 
     @Override
     public List<Lesson> getByCourseId(int curseId) {
+        LOGGER.debug("Getting lessons by curseId");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", curseId);
             return jdbcTemplate.query(LESSON_GET_BY_COURSE_ID, namedParameters, lessonMapper);
@@ -136,6 +147,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
 
     @Override
     public Lesson getByDatePeriodIdTeacherId(LocalDate date, int periodId, int teacherId) {
+        LOGGER.debug("Getting lesson by date, periodId, teacherId");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
                     .addValue("date", date)
@@ -157,6 +169,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
 
     @Override
     public Lesson getByDatePeriodIdClassroomId(LocalDate date, int periodId, int classroomId) {
+        LOGGER.debug("Getting lesson by date, periodId, classroomId");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
                     .addValue("date", date)

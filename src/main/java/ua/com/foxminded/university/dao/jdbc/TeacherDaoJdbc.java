@@ -9,6 +9,8 @@ import static ua.com.foxminded.university.dao.jdbc.Query.TEACHER_DELETE;
 import java.sql.Date;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -23,7 +25,8 @@ import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Teacher;
 
 @Repository
-public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {    
+public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {  
+    private static final Logger LOGGER = LoggerFactory.getLogger(TeacherDaoJdbc.class);
     private TeacherMapper teacherMapper;   
     
     @Autowired
@@ -33,6 +36,7 @@ public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {
 
     @Override
     public List<Teacher> getAll() {
+        LOGGER.debug("Getting all teachers");
         try {
             return jdbcTemplate.query(TEACHER_GET_ALL, teacherMapper);
         } catch (DataAccessException e) {
@@ -42,6 +46,7 @@ public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {
 
     @Override
     public Teacher getById(int id) {
+        LOGGER.debug("Getting teacher by id");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             List<Teacher> teachers = jdbcTemplate.query(TEACHER_GET_BY_ID, namedParameters, teacherMapper);
@@ -57,6 +62,7 @@ public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {
 
     @Override
     public Teacher insert(Teacher item) {
+        LOGGER.debug("Creating teacher");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
                     .addValue("first_name", item.getFirstName())
@@ -74,6 +80,7 @@ public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {
 
     @Override
     public int update(Teacher item) {
+        LOGGER.debug("Updating teacher");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
                     .addValue("id", item.getId())                
@@ -89,6 +96,7 @@ public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {
 
     @Override
     public int delete(int id) {
+        LOGGER.debug("Removung teacher");
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(TEACHER_DELETE, namedParameters);
