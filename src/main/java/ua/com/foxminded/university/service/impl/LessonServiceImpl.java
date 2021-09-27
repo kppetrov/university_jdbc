@@ -3,6 +3,8 @@ package ua.com.foxminded.university.service.impl;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import ua.com.foxminded.university.service.LessonService;
 
 @Service
 public class LessonServiceImpl implements LessonService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LessonServiceImpl.class);
     private static final String TEACHER_IS_BUSY = "Cannot create lesson. The teacher is busy at this time.";
     private static final String CLASSROOM_IS_OCCUPIED = "Cannot create lesson. The classroom is occupied at this time.";
     private static final String TEACHER_IS_BUSY_UPDATE = "Cannot update lesson. The teacher is busy at this time.";
@@ -47,8 +50,10 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public Lesson insert(Lesson item) {
         if (teacherIsBusy(item.getDate(), item.getPeriod().getId(), item.getTeacher().getId())) {
+            LOGGER.info(TEACHER_IS_BUSY);
             throw new ServiceException(TEACHER_IS_BUSY);        }
         if (classroomIsOccupied(item.getDate(), item.getPeriod().getId(), item.getClassroom().getId())) {
+            LOGGER.info(CLASSROOM_IS_OCCUPIED);
             throw new ServiceException(CLASSROOM_IS_OCCUPIED);
         }
         try {
@@ -61,9 +66,11 @@ public class LessonServiceImpl implements LessonService {
     @Override
     public int update(Lesson item) {
         if (teacherIsBusy(item.getDate(), item.getPeriod().getId(), item.getTeacher().getId(), item.getId())) {
+            LOGGER.info(TEACHER_IS_BUSY_UPDATE);
             throw new ServiceException(TEACHER_IS_BUSY_UPDATE);
         }
         if (classroomIsOccupied(item.getDate(), item.getPeriod().getId(), item.getClassroom().getId(), item.getId())) {
+            LOGGER.info(CLASSROOM_IS_OCCUPIED_UPDATE);
             throw new ServiceException(CLASSROOM_IS_OCCUPIED_UPDATE);
         }
         try {
@@ -74,6 +81,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     private boolean teacherIsBusy(LocalDate date, int periodId, int teacherId, int exceptLessonId) {
+        LOGGER.debug("Check if teacher is busy");
         try {
             Lesson lesson = lessonDao.getByDatePeriodIdTeacherId(date, periodId, teacherId);
             return lesson.getId() > 0 && lesson.getId() != exceptLessonId;
@@ -83,6 +91,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     private boolean classroomIsOccupied(LocalDate date, int periodId, int classroomId, int exceptLessonId) {
+        LOGGER.debug("Check if classroom is occupied");
         try {
             Lesson lesson = lessonDao.getByDatePeriodIdClassroomId(date, periodId, classroomId);
             return lesson.getId() > 0 && lesson.getId() != exceptLessonId;
