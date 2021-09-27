@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ua.com.foxminded.university.dao.GroupDao;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.exception.ServiceException;
 import ua.com.foxminded.university.model.Group;
 import ua.com.foxminded.university.service.GroupService;
@@ -26,7 +27,7 @@ public class GroupServiceImpl implements GroupService {
     public List<Group> getAll() {
         try {
             return groupDao.getAll();
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -35,7 +36,7 @@ public class GroupServiceImpl implements GroupService {
     public Group getById(int id) {
         try {
             return groupDao.getById(id);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -44,7 +45,7 @@ public class GroupServiceImpl implements GroupService {
     public Group getByName(String name) {
         try {
             return groupDao.getByName(name);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -57,7 +58,7 @@ public class GroupServiceImpl implements GroupService {
         }
         try {
             return groupDao.insert(item);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -66,7 +67,7 @@ public class GroupServiceImpl implements GroupService {
         try {
             Group group = groupDao.getByName(name);
             return group.getId() > 0;
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -79,7 +80,7 @@ public class GroupServiceImpl implements GroupService {
         }
         try {
             return groupDao.update(item);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -88,7 +89,7 @@ public class GroupServiceImpl implements GroupService {
     public int delete(int id) {
         try {
             return groupDao.delete(id);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -97,7 +98,7 @@ public class GroupServiceImpl implements GroupService {
     public Group getByIdWithDetail(int id) {
         try {
             return groupDao.getByIdWithDetail(id);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -106,7 +107,7 @@ public class GroupServiceImpl implements GroupService {
     public List<Group> getByCourseId(int curseId) {
         try {
             return groupDao.getByCourseId(curseId);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -115,7 +116,7 @@ public class GroupServiceImpl implements GroupService {
     public int updateStudents(Group item) {
         try {
             return groupDao.updateStudents(item);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }

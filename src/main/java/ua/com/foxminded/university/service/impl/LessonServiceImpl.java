@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ua.com.foxminded.university.dao.LessonDao;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.exception.ServiceException;
 import ua.com.foxminded.university.model.Lesson;
 import ua.com.foxminded.university.service.LessonService;
@@ -29,7 +30,7 @@ public class LessonServiceImpl implements LessonService {
     public List<Lesson> getAll() {
         try {
             return lessonDao.getAll();
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -38,7 +39,7 @@ public class LessonServiceImpl implements LessonService {
     public Lesson getById(int id) {
         try {
             return lessonDao.getById(id);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -52,7 +53,7 @@ public class LessonServiceImpl implements LessonService {
         }
         try {
             return lessonDao.insert(item);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -67,7 +68,7 @@ public class LessonServiceImpl implements LessonService {
         }
         try {
             return lessonDao.update(item);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -76,7 +77,7 @@ public class LessonServiceImpl implements LessonService {
         try {
             Lesson lesson = lessonDao.getByDatePeriodIdTeacherId(date, periodId, teacherId);
             return lesson.getId() > 0 && lesson.getId() != exceptLessonId;
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -85,7 +86,7 @@ public class LessonServiceImpl implements LessonService {
         try {
             Lesson lesson = lessonDao.getByDatePeriodIdClassroomId(date, periodId, classroomId);
             return lesson.getId() > 0 && lesson.getId() != exceptLessonId;
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -102,7 +103,7 @@ public class LessonServiceImpl implements LessonService {
     public int delete(int id) {
         try {
             return lessonDao.delete(id);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -111,7 +112,7 @@ public class LessonServiceImpl implements LessonService {
     public List<Lesson> getByCourseId(int curseId) {
         try {
             return lessonDao.getByCourseId(curseId);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -120,7 +121,7 @@ public class LessonServiceImpl implements LessonService {
     public List<Lesson> getByGroupId(int groupId) {
         try {
             return lessonDao.getByGroupId(groupId);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -129,7 +130,7 @@ public class LessonServiceImpl implements LessonService {
     public List<Lesson> getByTeacherId(int teacherId) {
         try {
             return lessonDao.getByTeacherId(teacherId);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }

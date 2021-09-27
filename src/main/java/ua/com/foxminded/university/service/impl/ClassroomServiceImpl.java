@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ua.com.foxminded.university.dao.ClassroomDao;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.exception.ServiceException;
 import ua.com.foxminded.university.model.Classroom;
 import ua.com.foxminded.university.service.ClassroomService;
@@ -23,7 +24,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     public List<Classroom> getAll() {
         try {
             return classroomDao.getAll();
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -32,7 +33,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     public Classroom getById(int id) {
         try {
             return classroomDao.getById(id);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -41,7 +42,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     public Classroom insert(Classroom item) {
         try {
             return classroomDao.insert(item);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -50,7 +51,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     public int update(Classroom item) {
         try {
             return classroomDao.update(item);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -59,7 +60,7 @@ public class ClassroomServiceImpl implements ClassroomService {
     public int delete(int id) {
         try {
             return classroomDao.delete(id);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }

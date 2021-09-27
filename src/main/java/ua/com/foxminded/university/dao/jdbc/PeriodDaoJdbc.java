@@ -10,6 +10,7 @@ import java.sql.Time;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -34,7 +35,7 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
     public List<Period> getAll() {
         try {
             return jdbcTemplate.query(PERIOD_GET_ALL, periodMapper);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get all periods", e);
         }  
     }
@@ -43,13 +44,12 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
     public Period getById(int id) { 
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-            List<Period> periods = jdbcTemplate.query(PERIOD_GET_BY_ID, namedParameters, periodMapper);
+            List<Period> periods = jdbcTemplate.query(PERIOD_GET_BY_ID, namedParameters, periodMapper);            
             if (periods.isEmpty()) {
                 return new Period();
             }
             return periods.get(0);
-        } catch (Exception e) {
-
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get period by id. id = " + id, e);
         }
     }
@@ -61,10 +61,10 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
                     .addValue("name", item.getName())
                     .addValue("start_time", Time.valueOf(item.getStart()))
                     .addValue("end_time", Time.valueOf(item.getEnd()));
-            KeyHolder keyHolder = new GeneratedKeyHolder();
+            KeyHolder keyHolder = new GeneratedKeyHolder();            
             jdbcTemplate.update(PERIOD_INSERT, namedParameters, keyHolder, new String[] { "id" });
             return new Period(keyHolder.getKeyAs(Integer.class), item.getName(), item.getStart(), item.getEnd());
-        } catch (Exception e) {            
+        } catch (DataAccessException e) {            
             throw new DaoException("Cannot create period. " + item, e);
         }
     }
@@ -76,9 +76,9 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
                     .addValue("id", item.getId())
                     .addValue("name", item.getName())
                     .addValue("start_time", Time.valueOf(item.getStart()))
-                    .addValue("end_time", Time.valueOf(item.getEnd()));
+                    .addValue("end_time", Time.valueOf(item.getEnd()));            
             return jdbcTemplate.update(PERIOD_UPDATE, namedParameters);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot update period. " + item, e);
         }
     }
@@ -86,9 +86,9 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
     @Override
     public int delete(int id) {
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
+            SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);            
             return jdbcTemplate.update(PERIOD_DELETE, namedParameters);
-        } catch (Exception e) {            
+        } catch (DataAccessException e) {            
             throw new DaoException("Cannot remove classroom. id = " + id, e);
         }
     }

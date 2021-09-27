@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -40,7 +41,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
     public List<Lesson> getAll() {
         try {
             return jdbcTemplate.query(LESSON_GET_ALL, lessonMapper);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get all lessons", e);
         }  
     }
@@ -54,7 +55,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
                 return new Lesson();
             }
             return lessons.get(0);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get lesson by id. id = " + id, e);
         }
     } 
@@ -72,7 +73,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
             jdbcTemplate.update(LESSON_INSERT, namedParameters, keyHolder, new String[] { "id" });
             return new Lesson(keyHolder.getKeyAs(Integer.class), item.getCourse(), item.getDate(), item.getPeriod(),
                     item.getTeacher(), item.getClassroom());
-        } catch (Exception e) {            
+        } catch (DataAccessException e) {            
             throw new DaoException("Cannot create lesson. " + item, e);
         }
     }
@@ -88,7 +89,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
                     .addValue("classroom_id", item.getClassroom().getId())
                     .addValue("teacher_id", item.getTeacher().getId());
             return jdbcTemplate.update(LESSON_UPDATE, namedParameters);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot update lesson. " + item, e);
         }
     }
@@ -98,7 +99,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(LESSON_DELETE, namedParameters);
-        } catch (Exception e) {            
+        } catch (DataAccessException e) {            
             throw new DaoException("Cannot remove lesson. id = " + id, e);
         }
     }
@@ -108,7 +109,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("group_id", groupId);
             return jdbcTemplate.query(LESSON_GET_BY_GROUP_ID, namedParameters, lessonMapper);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get lesson by groupId. groupId = " + groupId, e);
         }
     }
@@ -118,7 +119,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("teacher_id", teacherId);
             return jdbcTemplate.query(LESSON_GET_BY_TEACHER_ID, namedParameters, lessonMapper);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get lesson by teacherId. teacherId = " + teacherId, e);
         }
     }
@@ -128,7 +129,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", curseId);
             return jdbcTemplate.query(LESSON_GET_BY_COURSE_ID, namedParameters, lessonMapper);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get lesson by curseId. curseId = " + curseId, e);
         }
     }
@@ -146,7 +147,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
                 return new Lesson();
             }
             return lessons.get(0);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             String msg = String.format(
                     "Cannot get lesson by date, periodId, teacherId. Date = %s; periodId = %d; teacherId = %d", 
                     date, periodId, teacherId);
@@ -167,7 +168,7 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
                 return new Lesson();
             }
             return lessons.get(0);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             String msg = String.format(
                     "Cannot get lesson by date, periodId, classroomId. Date = %s; periodId = %d; classroomId = %d", 
                     date, periodId, classroomId);

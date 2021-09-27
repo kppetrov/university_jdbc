@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ua.com.foxminded.university.dao.TeacherDao;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.exception.ServiceException;
 import ua.com.foxminded.university.model.Teacher;
 import ua.com.foxminded.university.service.TeacherService;
@@ -18,7 +19,7 @@ public class TeacherServiceImpl implements TeacherService {
     public void setTeacherDao(TeacherDao teacherDao) {
         try {
             this.teacherDao = teacherDao;
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -27,7 +28,7 @@ public class TeacherServiceImpl implements TeacherService {
     public List<Teacher> getAll() {
         try {
             return teacherDao.getAll();
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -36,7 +37,7 @@ public class TeacherServiceImpl implements TeacherService {
     public Teacher getById(int id) {
         try {
             return teacherDao.getById(id);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -45,7 +46,7 @@ public class TeacherServiceImpl implements TeacherService {
     public Teacher insert(Teacher item) {
         try {
             return teacherDao.insert(item);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -54,7 +55,7 @@ public class TeacherServiceImpl implements TeacherService {
     public int update(Teacher item) {
         try {
             return teacherDao.update(item);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -63,7 +64,7 @@ public class TeacherServiceImpl implements TeacherService {
     public int delete(int id) {
         try {
             return teacherDao.delete(id);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }

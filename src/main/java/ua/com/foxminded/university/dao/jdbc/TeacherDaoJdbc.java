@@ -10,6 +10,7 @@ import java.sql.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -34,7 +35,7 @@ public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {
     public List<Teacher> getAll() {
         try {
             return jdbcTemplate.query(TEACHER_GET_ALL, teacherMapper);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get all teachers", e);
         }  
     }
@@ -48,7 +49,7 @@ public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {
                 return new Teacher();
             }
             return teachers.get(0);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
 
             throw new DaoException("Cannot get teacher by id. id = " + id, e);
         }
@@ -66,7 +67,7 @@ public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {
             jdbcTemplate.update(TEACHER_INSERT, namedParameters, keyHolder, new String[] { "id" });
             return new Teacher(keyHolder.getKeyAs(Integer.class), item.getFirstName(), item.getLastName(), item.getGender(),
                     item.getBirthdate());
-        } catch (Exception e) {            
+        } catch (DataAccessException e) {            
             throw new DaoException("Cannot create teacher. " + item, e);
         }
     }
@@ -81,7 +82,7 @@ public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {
                     .addValue("gender", item.getGender().getValue())
                     .addValue("birthdate", Date.valueOf(item.getBirthdate()));
             return jdbcTemplate.update(TEACHER_UPDATE, namedParameters);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot update teacher. " + item, e);
         }
     }
@@ -91,7 +92,7 @@ public class TeacherDaoJdbc extends AbstractDAO implements TeacherDao {
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(TEACHER_DELETE, namedParameters);
-        } catch (Exception e) {            
+        } catch (DataAccessException e) {            
             throw new DaoException("Cannot remove teacher. id = " + id, e);
         }
     }

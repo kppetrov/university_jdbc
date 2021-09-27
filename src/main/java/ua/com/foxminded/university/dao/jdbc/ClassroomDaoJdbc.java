@@ -9,6 +9,7 @@ import static ua.com.foxminded.university.dao.jdbc.Query.CLASSROOM_DELETE;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -33,7 +34,7 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
     public List<Classroom> getAll() {
         try {
             return jdbcTemplate.query(CLASSROOM_GET_ALL, classroomMapper);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             String msg = "Cannot get all classrooms";
             throw new DaoException(msg, e);
         }        
@@ -48,7 +49,7 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
                 return new Classroom();
             }
             return classrooms.get(0);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get classroom by id. Id = " + id, e);
         }
     }
@@ -60,7 +61,7 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(CLASSROOM_INSERT, namedParameters, keyHolder, new String[] { "id" });
             return new Classroom(keyHolder.getKeyAs(Integer.class), item.getName());
-        } catch (Exception e) {            
+        } catch (DataAccessException e) {            
             throw new DaoException("Cannot create classroom. " + item, e);
         }
     }
@@ -71,7 +72,7 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
             SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", item.getId()).addValue("name",
                     item.getName());
             return jdbcTemplate.update(CLASSROOM_UPDATE, namedParameters);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot update classroom. " + item, e);
         }
     }
@@ -81,7 +82,7 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(CLASSROOM_DELETE, namedParameters);
-        } catch (Exception e) {            
+        } catch (DataAccessException e) {            
             throw new DaoException("Cannot remove classroom. Id = " + id, e);
         }
     }

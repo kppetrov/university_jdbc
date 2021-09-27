@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -48,7 +49,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
     public List<Group> getAll() {
         try {
             return jdbcTemplate.query(GROUP_GET_ALL, groupMapper);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get all groups", e);
         }   
     }
@@ -62,7 +63,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
                 return new Group();
             }
             return groups.get(0);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get group by id. id = " + id, e);
         }
     }
@@ -76,7 +77,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
                 return new Group();
             }
             return groups.get(0);
-        } catch (Exception e) {            
+        } catch (DataAccessException e) {            
             throw new DaoException("Cannot get group by name. Name = " + name, e);
         }
     }
@@ -86,7 +87,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.query(GROUP_GET_BY_ID_DETAIL, namedParameters, groupWithDetailExtractor);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get group by id with detail. Id = " + id, e);
         }
     }
@@ -96,7 +97,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", curseId);
             return jdbcTemplate.query(GROUP_GET_BY_COURSE_ID, namedParameters, groupMapper);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get group by course id. Course id = " + curseId, e);
         }
     }
@@ -108,7 +109,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(GROUP_INSERT, namedParameters, keyHolder, new String[] { "id" });
             return new Group(keyHolder.getKeyAs(Integer.class), item.getName(), new ArrayList<>());
-        } catch (Exception e) {            
+        } catch (DataAccessException e) {            
             throw new DaoException("Cannot create group. " + item, e);
         }
     }
@@ -120,7 +121,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
                     .addValue("id", item.getId())
                     .addValue("name", item.getName());
             return jdbcTemplate.update(GROUP_UPDATE, namedParameters);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot update group. " + item, e);
         }
     }
@@ -130,7 +131,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(GROUP_DELETE, namedParameters);
-        } catch (Exception e) {            
+        } catch (DataAccessException e) {            
             throw new DaoException("Cannot remove group. Id = " + id, e);
         }
     }
@@ -147,7 +148,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
             result += jdbcTemplate.update(GROUP_REMOVE_STUDENTS_FROM_GROUP, namedParameters);
             result += jdbcTemplate.update(GROUP_ADD_STUDENTS_TO_GROUP, namedParameters);     
             return result;
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot update group students. " + item, e);
         }
     }

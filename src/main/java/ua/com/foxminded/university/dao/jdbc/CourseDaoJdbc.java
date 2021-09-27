@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -51,7 +52,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
     public List<Course> getAll() {        
         try {
             return jdbcTemplate.query(COURSE_GET_ALL, courseMapper);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get all courses", e);
         } 
     }
@@ -65,7 +66,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
                 return new Course();
             }
             return courses.get(0);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get course by id. id = " + id, e);
         }
     }
@@ -82,7 +83,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
             course.setGroups(groupDao.getByCourseId(id));
             course.setLessons(lessonDao.getByCourseId(id));
             return course; 
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot get classroom by id with detail. id = " + id, e);
         }
     }
@@ -97,7 +98,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
             course.setId(keyHolder.getKeyAs(Integer.class));
             course.setName(item.getName());
             return course;
-        } catch (Exception e) {            
+        } catch (DataAccessException e) {            
             throw new DaoException("Cannot create course. " + item, e);
         }
     }
@@ -109,7 +110,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
                     .addValue("id", item.getId())
                     .addValue("name", item.getName());
             return jdbcTemplate.update(COURSE_UPDATE, namedParameters);
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot update course. " + item, e);
         }
     }
@@ -119,8 +120,7 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(COURSE_DELETE, namedParameters);
-
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot remove course. id = " + id, e);
         }
     }
@@ -133,11 +133,10 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
                     .addValue("course_id", item.getId())
                     .addValue("group_ids", groupIds);
-
             result += jdbcTemplate.update(COURSE_REMOVE_GROUP_FROM_COURSE, namedParameters);
             result += jdbcTemplate.update(COURSE_ADD_GROUP_TO_COURSE, namedParameters);        
             return result;
-        } catch (Exception e) {
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot update course groups. " + item, e);
         }
     }    

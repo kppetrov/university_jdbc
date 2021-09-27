@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import ua.com.foxminded.university.dao.PeriodDao;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.exception.ServiceException;
 
 @Service
@@ -19,7 +20,7 @@ public class PeriodServiceImpl implements PeriodService {
     public void setPeriodDao(PeriodDao periodDao) {
         try {
             this.periodDao = periodDao;
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -28,7 +29,7 @@ public class PeriodServiceImpl implements PeriodService {
     public List<Period> getAll() {
         try {
             return periodDao.getAll();
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -37,7 +38,7 @@ public class PeriodServiceImpl implements PeriodService {
     public Period getById(int id) {
         try {
             return periodDao.getById(id);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -46,7 +47,7 @@ public class PeriodServiceImpl implements PeriodService {
     public Period insert(Period item) {
         try {
             return periodDao.insert(item);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -55,7 +56,7 @@ public class PeriodServiceImpl implements PeriodService {
     public int update(Period item) {
         try {
             return periodDao.update(item);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
@@ -64,7 +65,7 @@ public class PeriodServiceImpl implements PeriodService {
     public int delete(int id) {
         try {
             return periodDao.delete(id);
-        } catch (Exception e) {
+        } catch (DaoException e) {
             throw new ServiceException(e.getMessage(), e);
         }
     }
