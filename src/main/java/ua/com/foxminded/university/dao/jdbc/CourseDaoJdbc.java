@@ -4,7 +4,7 @@ import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_GET_ALL;
 import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_GET_BY_ID;
 import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_INSERT;
 import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_UPDATE;
-import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_DELETE;    
+import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_DELETE;
 import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_REMOVE_GROUP_FROM_COURSE;
 import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_ADD_GROUP_TO_COURSE;
 
@@ -34,36 +34,40 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(CourseDaoJdbc.class);
     private CourseMapper courseMapper;
     private LessonDao lessonDao;
-    private GroupDao groupDao;   
-    
+    private GroupDao groupDao;
+
     @Autowired
     public void setCourseMapper(CourseMapper courseMapper) {
         this.courseMapper = courseMapper;
     }
-    
+
     @Autowired
     public void setLessonDao(LessonDao lessonDao) {
         this.lessonDao = lessonDao;
     }
-    
+
     @Autowired
     public void setGroupDao(GroupDao groupDao) {
         this.groupDao = groupDao;
     }
-    
+
     @Override
     public List<Course> getAll() {
-        LOGGER.debug("Getting all courses");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting all courses");
+        }
         try {
             return jdbcTemplate.query(COURSE_GET_ALL, courseMapper);
         } catch (DataAccessException e) {
             throw new DaoException("Cannot get all courses", e);
-        } 
+        }
     }
 
     @Override
-    public Course getById(int id) {  
-        LOGGER.debug("Getting course by id");
+    public Course getById(int id) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting course by id. id={}", id);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             List<Course> courses = jdbcTemplate.query(COURSE_GET_BY_ID, namedParameters, courseMapper);
@@ -72,13 +76,15 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
             }
             return courses.get(0);
         } catch (DataAccessException e) {
-            throw new DaoException("Cannot get course by id. id = " + id, e);
+            throw new DaoException("Cannot get course by id. id=" + id, e);
         }
     }
-    
+
     @Override
     public Course getByIdWithDetail(int id) {
-        LOGGER.debug("Getting course by id with detail");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting course by id with detail. id={}", id);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             List<Course> courses = jdbcTemplate.query(COURSE_GET_BY_ID, namedParameters, courseMapper);
@@ -88,34 +94,37 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
             Course course = courses.get(0);
             course.setGroups(groupDao.getByCourseId(id));
             course.setLessons(lessonDao.getByCourseId(id));
-            return course; 
+            return course;
         } catch (DataAccessException e) {
-            throw new DaoException("Cannot get classroom by id with detail. id = " + id, e);
+            throw new DaoException("Cannot get classroom by id with detail. id=" + id, e);
         }
     }
 
     @Override
     public Course insert(Course item) {
-        LOGGER.debug("Creating course");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Creating course. {}", item);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("name", item.getName());
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(COURSE_INSERT, namedParameters, keyHolder, new String[] { "id" });
-            Course course =  new Course();
+            Course course = new Course();
             course.setId(keyHolder.getKeyAs(Integer.class));
             course.setName(item.getName());
             return course;
-        } catch (DataAccessException e) {            
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot create course. " + item, e);
         }
     }
 
     @Override
-    public int update(Course item) {        
-        LOGGER.debug("Updating course");
+    public int update(Course item) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Updating course. {}", item);
+        }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource()
-                    .addValue("id", item.getId())
+            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", item.getId())
                     .addValue("name", item.getName());
             return jdbcTemplate.update(COURSE_UPDATE, namedParameters);
         } catch (DataAccessException e) {
@@ -125,29 +134,32 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
 
     @Override
     public int delete(int id) {
-        LOGGER.debug("Removung course");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Removung course. id={}", id);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(COURSE_DELETE, namedParameters);
         } catch (DataAccessException e) {
-            throw new DaoException("Cannot remove course. id = " + id, e);
+            throw new DaoException("Cannot remove course. id=" + id, e);
         }
     }
 
     @Override
     public int updateGroups(Course item) {
-        LOGGER.debug("Updating course groups");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Updating course groups. {}", item);
+        }
         try {
-            int result = 0;    
-            List<Integer> groupIds = item.getGroups().stream().map(Group::getId).collect(Collectors.toList());        
-            SqlParameterSource namedParameters = new MapSqlParameterSource()
-                    .addValue("course_id", item.getId())
+            int result = 0;
+            List<Integer> groupIds = item.getGroups().stream().map(Group::getId).collect(Collectors.toList());
+            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("course_id", item.getId())
                     .addValue("group_ids", groupIds);
             result += jdbcTemplate.update(COURSE_REMOVE_GROUP_FROM_COURSE, namedParameters);
-            result += jdbcTemplate.update(COURSE_ADD_GROUP_TO_COURSE, namedParameters);        
+            result += jdbcTemplate.update(COURSE_ADD_GROUP_TO_COURSE, namedParameters);
             return result;
         } catch (DataAccessException e) {
             throw new DaoException("Cannot update course groups. " + item, e);
         }
-    }    
+    }
 }

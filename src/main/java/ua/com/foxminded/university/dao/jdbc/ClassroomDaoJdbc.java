@@ -25,7 +25,7 @@ import ua.com.foxminded.university.model.Classroom;
 
 @Repository
 public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ClassroomDaoJdbc.class);    
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassroomDaoJdbc.class);
     private ClassroomMapper classroomMapper;
 
     @Autowired
@@ -35,18 +35,22 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
 
     @Override
     public List<Classroom> getAll() {
-        LOGGER.debug("Getting all classrooms");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting all classrooms");
+        }
         try {
             return jdbcTemplate.query(CLASSROOM_GET_ALL, classroomMapper);
         } catch (DataAccessException e) {
             String msg = "Cannot get all classrooms";
             throw new DaoException(msg, e);
-        }        
+        }
     }
 
     @Override
-    public Classroom getById(int id) {  
-        LOGGER.debug("Getting classroom by id");
+    public Classroom getById(int id) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting classroom by id. id={}", id);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             List<Classroom> classrooms = jdbcTemplate.query(CLASSROOM_GET_BY_ID, namedParameters, classroomMapper);
@@ -55,29 +59,33 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
             }
             return classrooms.get(0);
         } catch (DataAccessException e) {
-            throw new DaoException("Cannot get classroom by id. Id = " + id, e);
+            throw new DaoException("Cannot get classroom by id. id=" + id, e);
         }
     }
 
     @Override
     public Classroom insert(Classroom item) {
-        LOGGER.debug("Creating classroom");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Creating classroom. {}", item);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("name", item.getName());
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(CLASSROOM_INSERT, namedParameters, keyHolder, new String[] { "id" });
             return new Classroom(keyHolder.getKeyAs(Integer.class), item.getName());
-        } catch (DataAccessException e) {            
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot create classroom. " + item, e);
         }
     }
 
     @Override
     public int update(Classroom item) {
-        LOGGER.debug("Updating classroom");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Updating classroom. {}", item);
+        }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", item.getId()).addValue("name",
-                    item.getName());
+            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", item.getId())
+                    .addValue("name", item.getName());
             return jdbcTemplate.update(CLASSROOM_UPDATE, namedParameters);
         } catch (DataAccessException e) {
             throw new DaoException("Cannot update classroom. " + item, e);
@@ -86,12 +94,14 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
 
     @Override
     public int delete(int id) {
-        LOGGER.debug("Removung classroom");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Removung classroom. id={}", id);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(CLASSROOM_DELETE, namedParameters);
-        } catch (DataAccessException e) {            
-            throw new DaoException("Cannot remove classroom. Id = " + id, e);
+        } catch (DataAccessException e) {
+            throw new DaoException("Cannot remove classroom. id=" + id, e);
         }
     }
 }

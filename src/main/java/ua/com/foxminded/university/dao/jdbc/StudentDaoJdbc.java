@@ -27,8 +27,8 @@ import ua.com.foxminded.university.model.Student;
 @Repository
 public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(StudentDaoJdbc.class);
-    private StudentMapper studentMapper;   
-    
+    private StudentMapper studentMapper;
+
     @Autowired
     public void setStudentMapper(StudentMapper studentMapper) {
         this.studentMapper = studentMapper;
@@ -36,17 +36,21 @@ public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
 
     @Override
     public List<Student> getAll() {
-        LOGGER.debug("Getting all students");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting all students");
+        }
         try {
             return jdbcTemplate.query(STUDENT_GET_ALL, studentMapper);
         } catch (DataAccessException e) {
             throw new DaoException("Cannot get all students", e);
-        }  
+        }
     }
 
     @Override
     public Student getById(int id) {
-        LOGGER.debug("Getting student by id");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting student by id. id={}", id);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             List<Student> students = jdbcTemplate.query(STUDENT_GET_BY_ID, namedParameters, studentMapper);
@@ -55,36 +59,36 @@ public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
             }
             return students.get(0);
         } catch (DataAccessException e) {
-            throw new DaoException("Cannot get student by id. id = " + id, e);
+            throw new DaoException("Cannot get student by id. id=" + id, e);
         }
     }
 
     @Override
     public Student insert(Student item) {
-        LOGGER.debug("Creating student");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Creating student. {}", item);
+        }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource()
-                    .addValue("first_name", item.getFirstName())
-                    .addValue("last_name", item.getLastName())
-                    .addValue("gender", item.getGender().getValue())
+            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("first_name", item.getFirstName())
+                    .addValue("last_name", item.getLastName()).addValue("gender", item.getGender().getValue())
                     .addValue("birthdate", Date.valueOf(item.getBirthdate()));
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(STUDENT_INSERT, namedParameters, keyHolder, new String[] { "id" });
-            return new Student(keyHolder.getKeyAs(Integer.class), item.getFirstName(), item.getLastName(), item.getGender(),
-                    item.getBirthdate());
-        } catch (DataAccessException e) {            
+            return new Student(keyHolder.getKeyAs(Integer.class), item.getFirstName(), item.getLastName(),
+                    item.getGender(), item.getBirthdate());
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot create student. " + item, e);
         }
     }
 
     @Override
     public int update(Student item) {
-        LOGGER.debug("Updating student");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Updating student. {}", item);
+        }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource()
-                    .addValue("id", item.getId())                
-                    .addValue("first_name", item.getFirstName())
-                    .addValue("last_name", item.getLastName())
+            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", item.getId())
+                    .addValue("first_name", item.getFirstName()).addValue("last_name", item.getLastName())
                     .addValue("gender", item.getGender().getValue())
                     .addValue("birthdate", Date.valueOf(item.getBirthdate()));
             return jdbcTemplate.update(STUDENT_UPDATE, namedParameters);
@@ -95,12 +99,14 @@ public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
 
     @Override
     public int delete(int id) {
-        LOGGER.debug("Removung student");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Removung student. id={}", id);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(STUDENT_DELETE, namedParameters);
-        } catch (DataAccessException e) {            
-            throw new DaoException("Cannot remove student. id = " + id, e);
+        } catch (DataAccessException e) {
+            throw new DaoException("Cannot remove student. id=" + id, e);
         }
     }
 }

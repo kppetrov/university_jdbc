@@ -25,7 +25,7 @@ import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Period;
 
 @Repository
-public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao { 
+public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(PeriodDaoJdbc.class);
     private PeriodMapper periodMapper;
 
@@ -36,54 +36,59 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
 
     @Override
     public List<Period> getAll() {
-        LOGGER.debug("Getting all periods");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting all periods");
+        }
         try {
             return jdbcTemplate.query(PERIOD_GET_ALL, periodMapper);
         } catch (DataAccessException e) {
             throw new DaoException("Cannot get all periods", e);
-        }  
+        }
     }
 
     @Override
-    public Period getById(int id) { 
-        LOGGER.debug("Getting period by id");
+    public Period getById(int id) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting period by id. id={}", id);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-            List<Period> periods = jdbcTemplate.query(PERIOD_GET_BY_ID, namedParameters, periodMapper);            
+            List<Period> periods = jdbcTemplate.query(PERIOD_GET_BY_ID, namedParameters, periodMapper);
             if (periods.isEmpty()) {
                 return new Period();
             }
             return periods.get(0);
         } catch (DataAccessException e) {
-            throw new DaoException("Cannot get period by id. id = " + id, e);
+            throw new DaoException("Cannot get period by id. id=" + id, e);
         }
     }
 
     @Override
     public Period insert(Period item) {
-        LOGGER.debug("Creating period");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Creating period. {}", item);
+        }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource()
-                    .addValue("name", item.getName())
+            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("name", item.getName())
                     .addValue("start_time", Time.valueOf(item.getStart()))
                     .addValue("end_time", Time.valueOf(item.getEnd()));
-            KeyHolder keyHolder = new GeneratedKeyHolder();            
+            KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(PERIOD_INSERT, namedParameters, keyHolder, new String[] { "id" });
             return new Period(keyHolder.getKeyAs(Integer.class), item.getName(), item.getStart(), item.getEnd());
-        } catch (DataAccessException e) {            
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot create period. " + item, e);
         }
     }
 
     @Override
-    public int update(Period item) { 
-        LOGGER.debug("Updating period");
+    public int update(Period item) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Updating period. {}", item);
+        }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource()
-                    .addValue("id", item.getId())
-                    .addValue("name", item.getName())
-                    .addValue("start_time", Time.valueOf(item.getStart()))
-                    .addValue("end_time", Time.valueOf(item.getEnd()));            
+            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", item.getId())
+                    .addValue("name", item.getName()).addValue("start_time", Time.valueOf(item.getStart()))
+                    .addValue("end_time", Time.valueOf(item.getEnd()));
             return jdbcTemplate.update(PERIOD_UPDATE, namedParameters);
         } catch (DataAccessException e) {
             throw new DaoException("Cannot update period. " + item, e);
@@ -92,12 +97,14 @@ public class PeriodDaoJdbc extends AbstractDAO implements PeriodDao {
 
     @Override
     public int delete(int id) {
-        LOGGER.debug("Removung period");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Removung period. id={}", id);
+        }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);            
+            SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(PERIOD_DELETE, namedParameters);
-        } catch (DataAccessException e) {            
-            throw new DaoException("Cannot remove classroom. id = " + id, e);
+        } catch (DataAccessException e) {
+            throw new DaoException("Cannot remove classroom. id=" + id, e);
         }
     }
 }

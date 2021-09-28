@@ -37,7 +37,7 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupDaoJdbc.class);
     private GroupMapper groupMapper;
     private GroupWithStudentsExtractor groupWithDetailExtractor;
-    
+
     @Autowired
     public void setGroupMapper(GroupMapper groupMapper) {
         this.groupMapper = groupMapper;
@@ -50,17 +50,21 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
 
     @Override
     public List<Group> getAll() {
-        LOGGER.debug("Getting all groups");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting all groups");
+        }
         try {
             return jdbcTemplate.query(GROUP_GET_ALL, groupMapper);
         } catch (DataAccessException e) {
             throw new DaoException("Cannot get all groups", e);
-        }   
+        }
     }
 
     @Override
     public Group getById(int id) {
-        LOGGER.debug("Getting group by id");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting group by id. id={}", id);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             List<Group> groups = jdbcTemplate.query(GROUP_GET_BY_ID, namedParameters, groupMapper);
@@ -69,13 +73,15 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
             }
             return groups.get(0);
         } catch (DataAccessException e) {
-            throw new DaoException("Cannot get group by id. id = " + id, e);
+            throw new DaoException("Cannot get group by id. id=" + id, e);
         }
     }
-    
+
     @Override
     public Group getByName(String name) {
-        LOGGER.debug("Getting group by name");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting group by name. name={}", name);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("name", name);
             List<Group> groups = jdbcTemplate.query(GROUP_GET_BY_NAME, namedParameters, groupMapper);
@@ -83,52 +89,59 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
                 return new Group();
             }
             return groups.get(0);
-        } catch (DataAccessException e) {            
-            throw new DaoException("Cannot get group by name. Name = " + name, e);
+        } catch (DataAccessException e) {
+            throw new DaoException("Cannot get group by name. name=" + name, e);
         }
     }
 
     @Override
     public Group getByIdWithDetail(int id) {
-        LOGGER.debug("Getting group by id with detail");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting group by id with detail. id={}", id);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.query(GROUP_GET_BY_ID_DETAIL, namedParameters, groupWithDetailExtractor);
         } catch (DataAccessException e) {
-            throw new DaoException("Cannot get group by id with detail. Id = " + id, e);
+            throw new DaoException("Cannot get group by id with detail. id=" + id, e);
         }
     }
-    
+
     @Override
-    public List<Group> getByCourseId(int curseId) {
-        LOGGER.debug("Getting group by curseId");
+    public List<Group> getByCourseId(int courseId) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Getting group by curseId. curseId={}", courseId);
+        }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", curseId);
+            SqlParameterSource namedParameters = new MapSqlParameterSource("course_id", courseId);
             return jdbcTemplate.query(GROUP_GET_BY_COURSE_ID, namedParameters, groupMapper);
         } catch (DataAccessException e) {
-            throw new DaoException("Cannot get group by course id. Course id = " + curseId, e);
+            throw new DaoException("Cannot get group by curseId. curseId=" + courseId, e);
         }
     }
 
     @Override
     public Group insert(Group item) {
-        LOGGER.debug("Creating group");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Creating group. {}", item);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("name", item.getName());
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(GROUP_INSERT, namedParameters, keyHolder, new String[] { "id" });
             return new Group(keyHolder.getKeyAs(Integer.class), item.getName(), new ArrayList<>());
-        } catch (DataAccessException e) {            
+        } catch (DataAccessException e) {
             throw new DaoException("Cannot create group. " + item, e);
         }
     }
 
     @Override
     public int update(Group item) {
-        LOGGER.debug("Updating group");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Updating group. {}", item);
+        }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource()
-                    .addValue("id", item.getId())
+            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", item.getId())
                     .addValue("name", item.getName());
             return jdbcTemplate.update(GROUP_UPDATE, namedParameters);
         } catch (DataAccessException e) {
@@ -137,28 +150,30 @@ public class GroupDaoJdbc extends AbstractDAO implements GroupDao {
     }
 
     @Override
-    public int delete(int id) {        
-        LOGGER.debug("Removung group");
+    public int delete(int id) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Removung group. id={}", id);
+        }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
             return jdbcTemplate.update(GROUP_DELETE, namedParameters);
-        } catch (DataAccessException e) {            
-            throw new DaoException("Cannot remove group. Id = " + id, e);
+        } catch (DataAccessException e) {
+            throw new DaoException("Cannot remove group. id=" + id, e);
         }
     }
 
-    
     @Override
     public int updateStudents(Group item) {
-        LOGGER.debug("Updating group students");
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Updating group students. {}", item);
+        }
         try {
-            int result = 0;    
-            List<Integer> studentsIds = item.getStudents().stream().map(Student::getId).collect(Collectors.toList());        
-            SqlParameterSource namedParameters = new MapSqlParameterSource()
-                    .addValue("group_id", item.getId())
+            int result = 0;
+            List<Integer> studentsIds = item.getStudents().stream().map(Student::getId).collect(Collectors.toList());
+            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("group_id", item.getId())
                     .addValue("students_ids", studentsIds);
             result += jdbcTemplate.update(GROUP_REMOVE_STUDENTS_FROM_GROUP, namedParameters);
-            result += jdbcTemplate.update(GROUP_ADD_STUDENTS_TO_GROUP, namedParameters);     
+            result += jdbcTemplate.update(GROUP_ADD_STUDENTS_TO_GROUP, namedParameters);
             return result;
         } catch (DataAccessException e) {
             throw new DaoException("Cannot update group students. " + item, e);
