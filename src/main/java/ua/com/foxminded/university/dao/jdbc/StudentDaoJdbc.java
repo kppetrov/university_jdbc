@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -26,7 +27,8 @@ import ua.com.foxminded.university.model.Student;
 
 @Repository
 public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
-    private static final Logger LOGGER = LoggerFactory.getLogger(StudentDaoJdbc.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StudentDaoJdbc.class);    
+    private static final String ID_NOT_EXIST = "The student with id=%d does not exist";
     private StudentMapper studentMapper;
 
     @Autowired
@@ -53,11 +55,10 @@ public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
         }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-            List<Student> students = jdbcTemplate.query(STUDENT_GET_BY_ID, namedParameters, studentMapper);
-            if (students.isEmpty()) {
-                return new Student();
-            }
-            return students.get(0);
+            return jdbcTemplate.queryForObject(STUDENT_GET_BY_ID, namedParameters, studentMapper);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            String msg = String.format(ID_NOT_EXIST, id);
+            throw new DaoException(msg, e);
         } catch (DataAccessException e) {
             throw new DaoException("Cannot get student by id. id=" + id, e);
         }
@@ -69,8 +70,10 @@ public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
             LOGGER.debug("Creating student. {}", item);
         }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("first_name", item.getFirstName())
-                    .addValue("last_name", item.getLastName()).addValue("gender", item.getGender().getValue())
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("first_name", item.getFirstName())
+                    .addValue("last_name", item.getLastName())
+                    .addValue("gender", item.getGender().getValue())
                     .addValue("birthdate", Date.valueOf(item.getBirthdate()));
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(STUDENT_INSERT, namedParameters, keyHolder, new String[] { "id" });
@@ -87,8 +90,10 @@ public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
             LOGGER.debug("Updating student. {}", item);
         }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", item.getId())
-                    .addValue("first_name", item.getFirstName()).addValue("last_name", item.getLastName())
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("id", item.getId())
+                    .addValue("first_name", item.getFirstName())
+                    .addValue("last_name", item.getLastName())
                     .addValue("gender", item.getGender().getValue())
                     .addValue("birthdate", Date.valueOf(item.getBirthdate()));
             return jdbcTemplate.update(STUDENT_UPDATE, namedParameters);

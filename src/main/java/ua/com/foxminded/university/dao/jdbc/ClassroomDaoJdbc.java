@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -26,6 +27,7 @@ import ua.com.foxminded.university.model.Classroom;
 @Repository
 public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(ClassroomDaoJdbc.class);
+    private static final String ID_NOT_EXIST = "The classroom with id=%d does not exist";
     private ClassroomMapper classroomMapper;
 
     @Autowired
@@ -53,11 +55,10 @@ public class ClassroomDaoJdbc extends AbstractDAO implements ClassroomDao {
         }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-            List<Classroom> classrooms = jdbcTemplate.query(CLASSROOM_GET_BY_ID, namedParameters, classroomMapper);
-            if (classrooms.isEmpty()) {
-                return new Classroom();
-            }
-            return classrooms.get(0);
+            return jdbcTemplate.queryForObject(CLASSROOM_GET_BY_ID, namedParameters, classroomMapper);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            String msg = String.format(ID_NOT_EXIST, id);
+            throw new DaoException(msg, e);
         } catch (DataAccessException e) {
             throw new DaoException("Cannot get classroom by id. id=" + id, e);
         }

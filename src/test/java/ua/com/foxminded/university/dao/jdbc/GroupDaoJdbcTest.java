@@ -21,6 +21,8 @@ import ua.com.foxminded.university.model.Student;
 
 @SpringJUnitConfig(classes = DataConfigForTesting.class)
 class GroupDaoJdbcTest {
+    private static final String ID_NOT_EXIST = "The group with id=%d does not exist";
+    
     @Autowired
     private GroupDaoJdbc dao;
 
@@ -52,6 +54,16 @@ class GroupDaoJdbcTest {
                 () -> assertEquals(group1, actual1), 
                 () -> assertEquals(group2, actual2)
                 );
+    }    
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void shouldThrowExceptionWhenGroupWithSuchIdNotExist() {
+        int id = 10;
+        String msg = String.format(ID_NOT_EXIST, id);       
+        DaoException exception = assertThrows(DaoException.class, () -> dao.getById(id));
+        assertEquals(msg, exception.getMessage());
     }
     
     @Test
@@ -93,11 +105,13 @@ class GroupDaoJdbcTest {
     @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
     void testDelete() {
-        int countDelete = dao.delete(1);
-        Group group = dao.getById(1);
+        int id = 1;
+        String msg = String.format(ID_NOT_EXIST, id);
+        int countDelete = dao.delete(id);        
+        DaoException exception = assertThrows(DaoException.class, () -> dao.getById(id));
         assertAll(
                 () -> assertEquals(1, countDelete), 
-                () -> assertEquals(0, group.getId())
+                () -> assertEquals(msg, exception.getMessage())
                 );
     }
 

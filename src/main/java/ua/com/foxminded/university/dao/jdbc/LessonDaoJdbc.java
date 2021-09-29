@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -33,6 +34,7 @@ import ua.com.foxminded.university.model.Lesson;
 @Repository
 public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
     private static final Logger LOGGER = LoggerFactory.getLogger(LessonDaoJdbc.class);
+    private static final String ID_NOT_EXIST = "The lesson with id=%d does not exist";
     private LessonMapper lessonMapper;
 
     @Autowired
@@ -59,11 +61,10 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
         }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource("id", id);
-            List<Lesson> lessons = jdbcTemplate.query(LESSON_GET_BY_ID, namedParameters, lessonMapper);
-            if (lessons.isEmpty()) {
-                return new Lesson();
-            }
-            return lessons.get(0);
+            return jdbcTemplate.queryForObject(LESSON_GET_BY_ID, namedParameters, lessonMapper);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            String msg = String.format(ID_NOT_EXIST, id);
+            throw new DaoException(msg, e);
         } catch (DataAccessException e) {
             throw new DaoException("Cannot get lesson by id. id=" + id, e);
         }
@@ -76,7 +77,8 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
         }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
-                    .addValue("date", Date.valueOf(item.getDate())).addValue("course_id", item.getCourse().getId())
+                    .addValue("date", Date.valueOf(item.getDate()))
+                    .addValue("course_id", item.getCourse().getId())
                     .addValue("period_id", item.getPeriod().getId())
                     .addValue("classroom_id", item.getClassroom().getId())
                     .addValue("teacher_id", item.getTeacher().getId());
@@ -95,8 +97,10 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
             LOGGER.debug("Updating lesson. {}", item);
         }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("id", item.getId())
-                    .addValue("date", Date.valueOf(item.getDate())).addValue("course_id", item.getCourse().getId())
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("id", item.getId())
+                    .addValue("date", Date.valueOf(item.getDate()))
+                    .addValue("course_id", item.getCourse().getId())
                     .addValue("period_id", item.getPeriod().getId())
                     .addValue("classroom_id", item.getClassroom().getId())
                     .addValue("teacher_id", item.getTeacher().getId());
@@ -165,8 +169,10 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
                     periodId, teacherId);
         }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("date", date)
-                    .addValue("period_id", periodId).addValue("teacher_id", teacherId);
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("date", date)
+                    .addValue("period_id", periodId)
+                    .addValue("teacher_id", teacherId);
             List<Lesson> lessons = jdbcTemplate.query(LESSON_GET_BY_DATE_PERIOD_ID_TEACHER_ID, namedParameters,
                     lessonMapper);
             if (lessons.isEmpty()) {
@@ -188,8 +194,10 @@ public class LessonDaoJdbc extends AbstractDAO implements LessonDao {
                     periodId, classroomId);
         }
         try {
-            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("date", date)
-                    .addValue("period_id", periodId).addValue("classroom_id", classroomId);
+            SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("date", date)
+                    .addValue("period_id", periodId)
+                    .addValue("classroom_id", classroomId);
             List<Lesson> lessons = jdbcTemplate.query(LESSON_GET_BY_DATE_PERIOD_ID_CLASSROOM_ID, namedParameters,
                     lessonMapper);
             if (lessons.isEmpty()) {
