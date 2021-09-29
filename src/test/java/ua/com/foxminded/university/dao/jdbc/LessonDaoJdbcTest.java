@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import ua.com.foxminded.university.DataConfigForTesting;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Classroom;
 import ua.com.foxminded.university.model.Course;
 import ua.com.foxminded.university.model.Gender;
@@ -23,6 +24,8 @@ import ua.com.foxminded.university.model.Teacher;
 
 @SpringJUnitConfig(classes = DataConfigForTesting.class)
 class LessonDaoJdbcTest {
+    private static final String ID_NOT_EXIST = "The lesson with id=%d does not exist";
+    
     @Autowired
     private LessonDaoJdbc dao;
 
@@ -67,6 +70,16 @@ class LessonDaoJdbcTest {
                 () -> assertEquals(lesson4, actual4)
                 );
     }
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void shouldThrowExceptionWhenLessonWithSuchIdNotExist() {
+        int id = 10;
+        String msg = String.format(ID_NOT_EXIST, id);        
+        DaoException exception = assertThrows(DaoException.class, () -> dao.getById(id));
+        assertEquals(msg, exception.getMessage());
+    }
 
     @Test
     @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -99,12 +112,14 @@ class LessonDaoJdbcTest {
     @Test
     @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
-    void testDelete() {
-        int countDelete = dao.delete(1);
-        Lesson lesson = dao.getById(1);
+    void testDelete() {     
+        int id = 1;
+        String msg = String.format(ID_NOT_EXIST, id);
+        int countDelete = dao.delete(id);        
+        DaoException exception = assertThrows(DaoException.class, () -> dao.getById(id));
         assertAll(
                 () -> assertEquals(1, countDelete), 
-                () -> assertEquals(0, lesson.getId())
+                () -> assertEquals(msg, exception.getMessage())
                 );
     }
     
@@ -161,4 +176,36 @@ class LessonDaoJdbcTest {
                 () -> assertEquals(teacher2Lessons, actual2)
                 );
     }
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void testGetByDatePeriodIdTeacherId() {
+        Lesson actual1 = dao.getByDatePeriodIdTeacherId(LocalDate.of(2021, 01, 01), period1.getId(), teacher1.getId());
+        Lesson actual2 = dao.getByDatePeriodIdTeacherId(LocalDate.of(2021, 01, 01), period2.getId(), teacher1.getId());
+        Lesson actual3 = dao.getByDatePeriodIdTeacherId(LocalDate.of(2021, 01, 01), period1.getId(), teacher2.getId());
+        Lesson actual4 = dao.getByDatePeriodIdTeacherId(LocalDate.of(2021, 01, 01), period2.getId(), teacher2.getId());
+        assertAll(
+                () -> assertEquals(lesson1, actual1), 
+                () -> assertEquals(lesson2, actual2),
+                () -> assertEquals(lesson3, actual3),
+                () -> assertEquals(lesson4, actual4)
+                );
+    } 
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void testGetByDatePeriodIdClassroomId() {
+        Lesson actual1 = dao.getByDatePeriodIdClassroomId(LocalDate.of(2021, 01, 01), period1.getId(), classroom1.getId());
+        Lesson actual2 = dao.getByDatePeriodIdClassroomId(LocalDate.of(2021, 01, 01), period2.getId(), classroom1.getId());
+        Lesson actual3 = dao.getByDatePeriodIdClassroomId(LocalDate.of(2021, 01, 01), period1.getId(), classroom2.getId());
+        Lesson actual4 = dao.getByDatePeriodIdClassroomId(LocalDate.of(2021, 01, 01), period2.getId(), classroom2.getId());
+        assertAll(
+                () -> assertEquals(lesson1, actual1), 
+                () -> assertEquals(lesson2, actual2),
+                () -> assertEquals(lesson3, actual3),
+                () -> assertEquals(lesson4, actual4)
+                );
+    } 
 }

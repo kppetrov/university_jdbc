@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import ua.com.foxminded.university.DataConfigForTesting;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Classroom;
 import ua.com.foxminded.university.model.Course;
 import ua.com.foxminded.university.model.Gender;
@@ -24,6 +25,8 @@ import ua.com.foxminded.university.model.Teacher;
 
 @SpringJUnitConfig(classes = DataConfigForTesting.class)
 class CourseDaoJdbcTest {
+    private static final String ID_NOT_EXIST = "The course with id=%d does not exist";
+    
     @Autowired
     private CourseDaoJdbc dao; 
 
@@ -65,6 +68,16 @@ class CourseDaoJdbcTest {
                 () -> assertEquals(course2, actual2)
                 );
     }
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void shouldThrowExceptionWhenCourseWithSuchIdNotExist() {
+        int id = 10;
+        String msg = String.format(ID_NOT_EXIST, id);       
+        DaoException exception = assertThrows(DaoException.class, () -> dao.getById(id));
+        assertEquals(msg, exception.getMessage());
+    }
 
     @Test
     @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
@@ -95,11 +108,13 @@ class CourseDaoJdbcTest {
     @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
     void testDelete() {
-        int countDelete = dao.delete(1);
-        Course course = dao.getById(1);
+        int id = 1;
+        int countDelete = dao.delete(id);
+        String msg = String.format(ID_NOT_EXIST, id);       
+        DaoException exception = assertThrows(DaoException.class, () -> dao.getById(id));
         assertAll(
                 () -> assertEquals(1, countDelete), 
-                () -> assertEquals(0, course.getId())
+                () -> assertEquals(msg, exception.getMessage())
                 );
     }
 

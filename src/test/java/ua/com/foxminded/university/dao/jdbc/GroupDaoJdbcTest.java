@@ -14,12 +14,15 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import ua.com.foxminded.university.DataConfigForTesting;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Gender;
 import ua.com.foxminded.university.model.Group;
 import ua.com.foxminded.university.model.Student;
 
 @SpringJUnitConfig(classes = DataConfigForTesting.class)
 class GroupDaoJdbcTest {
+    private static final String ID_NOT_EXIST = "The group with id=%d does not exist";
+    
     @Autowired
     private GroupDaoJdbc dao;
 
@@ -47,6 +50,28 @@ class GroupDaoJdbcTest {
     void testGetById() {
         Group actual1 = dao.getById(group1.getId());
         Group actual2 = dao.getById(group2.getId());
+        assertAll(
+                () -> assertEquals(group1, actual1), 
+                () -> assertEquals(group2, actual2)
+                );
+    }    
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void shouldThrowExceptionWhenGroupWithSuchIdNotExist() {
+        int id = 10;
+        String msg = String.format(ID_NOT_EXIST, id);       
+        DaoException exception = assertThrows(DaoException.class, () -> dao.getById(id));
+        assertEquals(msg, exception.getMessage());
+    }
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void testGetByName() {
+        Group actual1 = dao.getByName(group1.getName());
+        Group actual2 = dao.getByName(group2.getName());
         assertAll(
                 () -> assertEquals(group1, actual1), 
                 () -> assertEquals(group2, actual2)
@@ -80,11 +105,13 @@ class GroupDaoJdbcTest {
     @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
     void testDelete() {
-        int countDelete = dao.delete(1);
-        Group group = dao.getById(1);
+        int id = 1;
+        String msg = String.format(ID_NOT_EXIST, id);
+        int countDelete = dao.delete(id);        
+        DaoException exception = assertThrows(DaoException.class, () -> dao.getById(id));
         assertAll(
                 () -> assertEquals(1, countDelete), 
-                () -> assertEquals(0, group.getId())
+                () -> assertEquals(msg, exception.getMessage())
                 );
     }
 
@@ -149,5 +176,24 @@ class GroupDaoJdbcTest {
                () -> assertEquals(group2, actual2), 
                () -> assertEquals(group2.getStudents(), actual2.getStudents())
                );       
+    }
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void shouldThrowExceptionWhenGroupNameAlreadyExists() {
+        String msg = "Cannot create group. " + group1;
+        DaoException exception = assertThrows(DaoException.class, () -> dao.insert(group1));
+        assertEquals(msg, exception.getMessage());
+    }    
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void shouldThrowExceptionWhenGroupNameAlreadyExistsUpdate() {
+        Group groupWithNewName = new Group(1, "group2", new ArrayList<>());
+        String msg = "Cannot update group. " + groupWithNewName;
+        DaoException exception = assertThrows(DaoException.class, () -> dao.update(groupWithNewName));
+        assertEquals(msg, exception.getMessage());
     }
 }
