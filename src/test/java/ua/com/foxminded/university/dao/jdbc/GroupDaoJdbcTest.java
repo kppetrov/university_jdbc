@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import ua.com.foxminded.university.DataConfigForTesting;
+import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Gender;
 import ua.com.foxminded.university.model.Group;
 import ua.com.foxminded.university.model.Student;
@@ -161,5 +162,24 @@ class GroupDaoJdbcTest {
                () -> assertEquals(group2, actual2), 
                () -> assertEquals(group2.getStudents(), actual2.getStudents())
                );       
+    }
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void shouldThrowExceptionWhenGroupNameAlreadyExists() {
+        String msg = "Cannot create group. " + group1;
+        DaoException exception = assertThrows(DaoException.class, () -> dao.insert(group1));
+        assertEquals(msg, exception.getMessage());
+    }    
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void shouldThrowExceptionWhenGroupNameAlreadyExistsUpdate() {
+        Group groupWithNewName = new Group(1, "group2", new ArrayList<>());
+        String msg = "Cannot update group. " + groupWithNewName;
+        DaoException exception = assertThrows(DaoException.class, () -> dao.update(groupWithNewName));
+        assertEquals(msg, exception.getMessage());
     }
 }

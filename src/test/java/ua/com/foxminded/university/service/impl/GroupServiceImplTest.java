@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +15,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import ua.com.foxminded.university.dao.GroupDao;
-import ua.com.foxminded.university.exception.ServiceException;
 import ua.com.foxminded.university.model.Group;
 
 @ExtendWith(MockitoExtension.class)
 class GroupServiceImplTest {
-    private static final String NAME_IS_TAKEN = "Cannot create a group. A group with this name(%s) already exists";
-    private static final String NAME_IS_TAKEN_UPDATE = "Cannot update a group. A group with this name(%s) already exists";
-    
     @Mock
     private GroupDao groupDao;
     @InjectMocks
@@ -59,36 +54,14 @@ class GroupServiceImplTest {
 
     @Test
     void testInsert() {
-        when(groupDao.getByName(group.getName())).thenReturn(new Group());
         service.insert(group);
         verify(groupDao, times(1)).insert(group);
     }
     
     @Test
-    void shouldThrowExceptionWhenGroupNameAlreadyExists() {
-        String msg = String.format(NAME_IS_TAKEN, group.getName());
-        when(groupDao.getByName(group.getName())).thenReturn(group);
-        ServiceException exception = assertThrows(ServiceException.class, () -> service.insert(group));
-        verify(groupDao, times(1)).getByName(group.getName());
-        verify(groupDao, times(0)).insert(any());
-        assertEquals(msg, exception.getMessage());
-    }
-
-    @Test
     void testUpdate() {
-        when(groupDao.getByName(group.getName())).thenReturn(new Group());
         service.update(group);
         verify(groupDao, times(1)).update(group);
-    }
-    
-    @Test
-    void shouldThrowExceptionWhenGroupNameAlreadyExistsUpdate() {
-        String msg = String.format(NAME_IS_TAKEN_UPDATE, group.getName());
-        when(groupDao.getByName(group.getName())).thenReturn(group);
-        ServiceException exception = assertThrows(ServiceException.class, () -> service.update(group));
-        verify(groupDao, times(1)).getByName(group.getName());
-        verify(groupDao, times(0)).update(any());
-        assertEquals(msg, exception.getMessage());
     }
 
     @Test

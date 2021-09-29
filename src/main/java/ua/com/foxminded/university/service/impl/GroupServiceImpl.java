@@ -2,8 +2,6 @@ package ua.com.foxminded.university.service.impl;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +13,6 @@ import ua.com.foxminded.university.service.GroupService;
 
 @Service
 public class GroupServiceImpl implements GroupService { 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GroupServiceImpl.class);
-    private static final String NAME_IS_TAKEN = "Cannot create a group. A group with this name(%s) already exists";
-    private static final String NAME_IS_TAKEN_UPDATE = "Cannot update a group. A group with this name(%s) already exists";
-
     private GroupDao groupDao;
 
     @Autowired
@@ -55,11 +49,6 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Group insert(Group item) {
-        if (nameIsTaken(item.getName())) {
-            String msg = String.format(NAME_IS_TAKEN, item.getName());
-            LOGGER.info(msg);
-            throw new ServiceException(msg);
-        }
         try {
             return groupDao.insert(item);
         } catch (DaoException e) {
@@ -67,23 +56,8 @@ public class GroupServiceImpl implements GroupService {
         }
     }
 
-    private boolean nameIsTaken(String name) {
-        LOGGER.debug("Check if name is taken");
-        try {
-            Group group = groupDao.getByName(name);
-            return group.getId() > 0;
-        } catch (DaoException e) {
-            throw new ServiceException(e.getMessage(), e);
-        }
-    }
-
     @Override
     public int update(Group item) {
-        if (nameIsTaken(item.getName())) {
-            String msg = String.format(NAME_IS_TAKEN_UPDATE, item.getName());
-            LOGGER.info(msg);
-            throw new ServiceException(msg);
-        }
         try {
             return groupDao.update(item);
         } catch (DaoException e) {

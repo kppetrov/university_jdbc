@@ -14,7 +14,8 @@ CREATE TABLE classrooms (
 
 CREATE TABLE groups (
     id SERIAL PRIMARY KEY NOT NULL,
-    name VARCHAR(25)
+    name VARCHAR(25),
+    UNIQUE (name)
 );
 
 CREATE TABLE courses (
