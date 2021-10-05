@@ -22,7 +22,6 @@
     </appender>
 
     <logger name="ua.com.foxminded.university" level="debug"/>
-
     <logger name="org.springframework" level="off"/>
 
     <root level="info">
