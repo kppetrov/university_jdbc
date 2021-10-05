@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{index :: html_head}"></head>
+
+<body>
+    <div th:replace="~{index :: header('lessons')}"></div>
+
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Course</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Period</th>
+                    <th scope="col">Classroom</th>
+                    <th scope="col">Teacher</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="lesson, iterStat : ${lessons}">
+                    <th scope="row" th:text="${iterStat.count}"></th>
+                    <td th:text="${lesson.id}"></td>
+                    <td th:text="${lesson.course.name}"></td>
+                    <td th:text="${lesson.date}"></td>
+                    <td th:text="${lesson.period.start + ' - ' + lesson.period.end}"></td>
+                    <td th:text="${lesson.classroom.name}"></td>
+                    <td th:text="${lesson.teacher.firstName + ' ' + lesson.teacher.lastName}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:replace="~{index :: footer}"></div>
+</body>
+
+</html>
