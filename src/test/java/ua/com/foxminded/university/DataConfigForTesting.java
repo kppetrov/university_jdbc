@@ -10,7 +10,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 @Configuration
-@ComponentScan(basePackages = "ua.com.foxminded.university")
+@ComponentScan(basePackages = "ua.com.foxminded.university.dao")
 public class DataConfigForTesting {
     @Bean
     public DataSource dataSource() {

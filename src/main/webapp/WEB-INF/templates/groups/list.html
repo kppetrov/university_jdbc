@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{index :: html_head}"></head>
+
+<body>
+	<div th:replace="~{index :: header('groups')}"></div>
+
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="group, iterStat : ${groups}">
+                    <th scope="row" th:text="${iterStat.count}"></th>
+                    <td th:text="${group.id}"></td>
+                    <td th:text="${group.name}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+	<div th:replace="~{index :: footer}"></div>
+</body>
+
+</html>

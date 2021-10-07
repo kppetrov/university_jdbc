@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{index :: html_head}"></head>
+
+<body>
+    <div th:replace="~{index :: header('teachers')}"></div>
+
+    <div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Birthdate</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="teacher, iterStat : ${teachers}">
+                    <th scope="row" th:text="${iterStat.count}"></th>
+                    <td th:text="${teacher.id}"></td>
+                    <td th:text="${teacher.firstName + ' ' + teacher.lastName}"></td>
+                    <td th:text="${teacher.birthdate}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div th:replace="~{index :: footer}"></div>
+</body>
+
+</html>

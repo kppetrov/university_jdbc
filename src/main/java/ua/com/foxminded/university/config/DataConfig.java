@@ -12,7 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 @Configuration
 @PropertySource("classpath:db/jdbc.properties")
-@ComponentScan(basePackages = "ua.com.foxminded.university")
+@ComponentScan(basePackages = {"ua.com.foxminded.university.dao", "ua.com.foxminded.university.service"})
 public class DataConfig {
     @Value("${driverClassName}")
     private String driverClassName;
