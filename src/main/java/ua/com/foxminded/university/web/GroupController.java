@@ -22,10 +22,12 @@ public class GroupController {
 
     @GetMapping
     public String list(Model model) {
-        LOGGER.info("Listing groups");
+        LOGGER.debug("Listing groups");
         List<Group> groups = groupService.getAll();
         model.addAttribute("groups", groups);
-        LOGGER.info("No. of groups: {}", + groups.size());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("No. of groups: {}", + groups.size());
+        }
         return "groups/list";
     }
 

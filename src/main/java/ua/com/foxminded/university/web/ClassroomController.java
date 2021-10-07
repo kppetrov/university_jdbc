@@ -22,10 +22,12 @@ public class ClassroomController {
     
     @GetMapping
     public String list(Model model) {
-        LOGGER.info("Listing classrooms");
+        LOGGER.debug("Listing classrooms");
         List<Classroom> classrooms = classroomService.getAll();
         model.addAttribute("classrooms", classrooms);
-        LOGGER.info("No. of classrooms: {}", classrooms.size());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("No. of classrooms: {}", classrooms.size());
+        }
         return "classrooms/list";
     }    
     

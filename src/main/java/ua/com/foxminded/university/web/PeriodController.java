@@ -22,10 +22,12 @@ public class PeriodController {
 
     @GetMapping
     public String list(Model model) {
-        LOGGER.info("Listing periods");
+        LOGGER.debug("Listing periods");
         List<Period> periods = periodService.getAll();
         model.addAttribute("periods", periods);
-        LOGGER.info("No. of periods: {}", periods.size());
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("No. of periods: {}", periods.size());
+        }
         return "periods/list";
     }
 
