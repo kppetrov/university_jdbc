@@ -1,5 +1,9 @@
 package ua.com.foxminded.university.init;
 
+import javax.servlet.Filter;
+
+import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 import ua.com.foxminded.university.config.DataConfig;
@@ -22,4 +26,11 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
         return new String[] { "/" };
     }
 
+    @Override
+    protected Filter[] getServletFilters() {
+        CharacterEncodingFilter cef = new CharacterEncodingFilter();
+        cef.setEncoding("UTF-8");
+        cef.setForceEncoding(true);
+        return new Filter[]{cef, new HiddenHttpMethodFilter()};
+    }
 }
