@@ -97,16 +97,16 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware{
 
     @Bean
     LocaleChangeInterceptor localeChangeInterceptor() { 
-        LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
-        lci.setParamName("lang");
-        return lci;
+        LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
+        localeChangeInterceptor.setParamName("lang");
+        return localeChangeInterceptor;
     }
     
     @Bean
     public LocaleResolver localeResolver() {
-        SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.US);
-        return slr;
+        SessionLocaleResolver sessionLocaleResolver = new SessionLocaleResolver();
+        sessionLocaleResolver.setDefaultLocale(Locale.US);
+        return sessionLocaleResolver;
     }
     
     @Override
