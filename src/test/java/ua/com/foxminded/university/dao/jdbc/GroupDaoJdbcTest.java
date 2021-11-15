@@ -28,10 +28,10 @@ class GroupDaoJdbcTest {
 
     private Group group1 = new Group(1, "group1", new ArrayList<>());
     private Group group2 = new Group(2, "group2", new ArrayList<>());
-    private Student student1 = new Student(1, "first_name1", "last_name1", Gender.MAIL, LocalDate.of(2001, 01, 01));
-    private Student student2 = new Student(2, "first_name2", "last_name2", Gender.FEMAIL, LocalDate.of(2002, 02, 02));
-    private Student student3 = new Student(3, "first_name3", "last_name3", Gender.FEMAIL, LocalDate.of(2003, 03, 03));
-    private Student student4 = new Student(4, "first_name4", "last_name4", Gender.FEMAIL, LocalDate.of(2004, 04, 04));
+    private Student student1 = new Student(1, "first_name1", "last_name1", Gender.MAIL, LocalDate.of(2001, 01, 01), group1);
+    private Student student2 = new Student(2, "first_name2", "last_name2", Gender.FEMAIL, LocalDate.of(2002, 02, 02), group1);
+    private Student student3 = new Student(3, "first_name3", "last_name3", Gender.FEMAIL, LocalDate.of(2003, 03, 03), group2);
+    private Student student4 = new Student(4, "first_name4", "last_name4", Gender.FEMAIL, LocalDate.of(2004, 04, 04), group2);
 
     @Test
     @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)

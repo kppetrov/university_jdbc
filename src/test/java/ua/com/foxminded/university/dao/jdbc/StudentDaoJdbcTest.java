@@ -15,6 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ua.com.foxminded.university.DataConfigForTesting;
 import ua.com.foxminded.university.exception.DaoException;
 import ua.com.foxminded.university.model.Gender;
+import ua.com.foxminded.university.model.Group;
 import ua.com.foxminded.university.model.Student;
 
 @SpringJUnitConfig(classes = DataConfigForTesting.class)
@@ -24,10 +25,12 @@ class StudentDaoJdbcTest {
     @Autowired
     private StudentDaoJdbc dao;
     
-    private Student student1 = new Student(1, "first_name1", "last_name1", Gender.MAIL, LocalDate.of(2001, 01, 01));
-    private Student student2 = new Student(2, "first_name2", "last_name2", Gender.FEMAIL, LocalDate.of(2002, 02, 02));
-    private Student student3 = new Student(3, "first_name3", "last_name3", Gender.FEMAIL, LocalDate.of(2003, 03, 03));
-    private Student student4 = new Student(4, "first_name4", "last_name4", Gender.FEMAIL, LocalDate.of(2004, 04, 04));
+    private Group group1 = new Group(1, "group1", new ArrayList<>());
+    private Group group2 = new Group(2, "group2", new ArrayList<>());
+    private Student student1 = new Student(1, "first_name1", "last_name1", Gender.MAIL, LocalDate.of(2001, 01, 01), group1);
+    private Student student2 = new Student(2, "first_name2", "last_name2", Gender.FEMAIL, LocalDate.of(2002, 02, 02), group1);
+    private Student student3 = new Student(3, "first_name3", "last_name3", Gender.FEMAIL, LocalDate.of(2003, 03, 03), group2);
+    private Student student4 = new Student(4, "first_name4", "last_name4", Gender.FEMAIL, LocalDate.of(2004, 04, 04), group2);
 
     @Test
     @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
@@ -65,6 +68,7 @@ class StudentDaoJdbcTest {
     }
 
     @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
     void testInsert() {
         Student student = new Student();
@@ -72,21 +76,26 @@ class StudentDaoJdbcTest {
         student.setLastName("last_name");
         student.setGender(Gender.FEMAIL);
         student.setBirthdate(LocalDate.of(1980, 01, 01));
-        student = dao.insert(student);
-        Student actual = dao.getById(student.getId());
-        assertEquals(student, actual);
+        student.setGroup(group1);
+        Student newStudent = dao.insert(student);
+        Student actual = dao.getById(newStudent.getId());
+        assertAll(
+                () -> assertEquals(newStudent, actual),
+                () -> assertEquals(newStudent.getGroup(), actual.getGroup())
+                );
     }
 
     @Test
     @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
     void testUpdate() {
-        Student student = new Student(1, "new first_name", "new last_name", Gender.MAIL, LocalDate.of(1980, 01, 01));
+        Student student = new Student(1, "new first_name", "new last_name", Gender.MAIL, LocalDate.of(1980, 01, 01), group2);
         int countUpdate = dao.update(student);
         Student actual = dao.getById(student.getId());
         assertAll(
                 () -> assertEquals(1, countUpdate), 
-                () -> assertEquals(student, actual)
+                () -> assertEquals(student, actual),
+                () -> assertEquals(student.getGroup(), actual.getGroup())
                 );
     }
 

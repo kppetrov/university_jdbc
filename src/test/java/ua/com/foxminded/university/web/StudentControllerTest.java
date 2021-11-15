@@ -26,6 +26,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import ua.com.foxminded.university.config.WebConfig;
 import ua.com.foxminded.university.model.Gender;
+import ua.com.foxminded.university.model.Group;
 import ua.com.foxminded.university.model.Student;
 import ua.com.foxminded.university.service.StudentService;
 
@@ -39,7 +40,8 @@ class StudentControllerTest {
     @InjectMocks
     private StudentController controller;
 
-    private Student student = new Student(1, "first_name", "last_name", Gender.MAIL, LocalDate.of(2001, 01, 01));
+    private Student student = new Student(1, "first_name", "last_name", Gender.MAIL, LocalDate.of(2001, 01, 01),
+            new Group(1, "group1"));
 
     @BeforeEach
     public void beforeEach() throws Exception {
@@ -50,11 +52,8 @@ class StudentControllerTest {
     void testGetAll() throws Exception {
         List<Student> expected = Arrays.asList(student);
         when(studentService.getAll()).thenReturn(expected);
-        mockMvc.perform(get("/students"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("students/list"))
-                .andExpect(model().attributeExists("students"))
-                .andExpect(model().attribute("students", expected));
+        mockMvc.perform(get("/students")).andExpect(status().isOk()).andExpect(view().name("students/list"))
+                .andExpect(model().attributeExists("students")).andExpect(model().attribute("students", expected));
         verify(studentService, times(1)).getAll();
         verifyNoMoreInteractions(studentService);
     }

@@ -17,6 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import ua.com.foxminded.university.dao.StudentDao;
 import ua.com.foxminded.university.model.Gender;
+import ua.com.foxminded.university.model.Group;
 import ua.com.foxminded.university.model.Student;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,9 +26,10 @@ class StudentServiceImplTest {
     private StudentDao studentDao;
     @InjectMocks
     private StudentServiceImpl service;
-    
-    private Student student = new Student(1, "first_name", "last_name", Gender.MAIL, LocalDate.of(2001, 01, 01));
-    
+
+    private Student student = new Student(1, "first_name", "last_name", Gender.MAIL, LocalDate.of(2001, 01, 01),
+            new Group(1, "group1"));
+
     @Test
     void testGetAll() {
         List<Student> students = new ArrayList<>();
