@@ -2,8 +2,13 @@ package ua.com.foxminded.university.model;
 
 import java.util.Objects;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 public class Classroom {
     private int id;
+    @NotBlank(message="{validation.classroom.name.NotBlank.message}")
+    @Size(min=3, max=25, message="{validation.classroom.name.Size.message}")
     private String name;
 
     public Classroom() {
