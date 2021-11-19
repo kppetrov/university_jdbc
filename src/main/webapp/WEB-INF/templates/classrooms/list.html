@@ -14,7 +14,7 @@
 			<thead>
 				<tr>
 					<th scope="col">#</th>
-					<th scope="col" th:text="#{classroom.id}">ID</th>
+					<th scope="col" th:text="#{generic.id}">ID</th>
 					<th scope="col" th:text="#{classroom.name}">Name</th>
 					<th scope="col" th:text="#{form.view}">View</th>
 				</tr>
@@ -24,7 +24,7 @@
 					<th scope="row" th:text="${iterStat.count}"></th>
 					<td th:text="${classroom.id}"></td>
 					<td th:text="${classroom.name}"></td>
-					<td><a th:href="@{/classrooms/{path}(path=${classroom.id})}"
+					<td><a th:href="@{/classrooms/{id}(id=${classroom.id})}"
 						th:text="#{form.view}">View</a></td>
 				</tr>
 			</tbody>

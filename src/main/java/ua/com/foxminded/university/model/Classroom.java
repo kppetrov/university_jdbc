@@ -7,8 +7,8 @@ import javax.validation.constraints.Size;
 
 public class Classroom {
     private int id;
-    @NotBlank(message="{validation.classroom.name.NotBlank.message}")
-    @Size(min=3, max=25, message="{validation.classroom.name.Size.message}")
+    @NotBlank(message="{validation.name.NotBlank.message}")
+    @Size(min=3, max=25, message="{validation.name.Size.message}")
     private String name;
 
     public Classroom() {

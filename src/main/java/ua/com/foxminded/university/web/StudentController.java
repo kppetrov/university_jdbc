@@ -3,11 +3,14 @@ package ua.com.foxminded.university.web;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +21,7 @@ import ua.com.foxminded.university.model.Student;
 import ua.com.foxminded.university.service.GroupService;
 import ua.com.foxminded.university.service.StudentService;
 import ua.com.foxminded.university.web.model.GroupModel;
+import ua.com.foxminded.university.web.model.StudentListModel;
 import ua.com.foxminded.university.web.model.StudentModel;
 
 @RequestMapping("/students")
@@ -31,7 +35,7 @@ public class StudentController {
     @GetMapping
     public String list(Model model) {
         LOGGER.debug("Listing students");
-        List<StudentModel> students = studentService.getAll().stream().map(StudentModel::new).collect(Collectors.toList());
+        List<StudentListModel> students = studentService.getAll().stream().map(StudentListModel::new).collect(Collectors.toList());
         model.addAttribute("students", students);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("No. of students: {}", students.size());
@@ -74,7 +78,12 @@ public class StudentController {
     }
 
     @PostMapping(value = "/update")
-    public String edit(@ModelAttribute("student") StudentModel student) {
+    public String edit(@ModelAttribute("student") @Valid StudentModel student, BindingResult bindingResult, Model model) {
+        if(bindingResult.hasErrors()) {
+            List<GroupModel> groups = groupService.getAll().stream().map(GroupModel::new).collect(Collectors.toList());
+            model.addAttribute("groups", groups);
+            return "students/form";
+        }
         studentService.update(student.toEntity());
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Student has been updated: {}", student);
@@ -83,7 +92,12 @@ public class StudentController {
     }
 
     @PostMapping(value = "/add")
-    public String create(@ModelAttribute("student") StudentModel student) {
+    public String create(@ModelAttribute("student") @Valid StudentModel student, BindingResult bindingResult, Model model) {
+        if(bindingResult.hasErrors()) {
+            List<GroupModel> groups = groupService.getAll().stream().map(GroupModel::new).collect(Collectors.toList());
+            model.addAttribute("groups", groups);
+            return "students/form";
+        }
         Student newStudent = studentService.insert(student.toEntity());
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Student has been created: {}", newStudent);

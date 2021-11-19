@@ -2,6 +2,9 @@ package ua.com.foxminded.university.web.model;
 
 import java.time.LocalDate;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 
@@ -11,10 +14,13 @@ import ua.com.foxminded.university.model.Student;
 
 public class StudentModel {
     private int id;
+    @NotBlank(message="{validation.person.firstName.NotBlank.message}")
     private String firstName;
+    @NotBlank(message="{validation.person.lastName.NotBlank.message}")
     private String lastName;
     private Gender gender;
     @DateTimeFormat(iso = ISO.DATE)
+    @NotNull(message="{validation.person.birthdate.NotNull.message}")
     private LocalDate birthdate;
     private int groupId;
     private String groupName;

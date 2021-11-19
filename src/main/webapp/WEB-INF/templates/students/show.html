@@ -19,27 +19,27 @@
 		<table class="table">
 			<tbody>
 				<tr>
-					<td>Id</td>
+					<td th:text="#{generic.id}">Id</td>
 					<td th:text="${student.id}"></td>
 				</tr>
 				<tr>
-					<td>First name</td>
+					<td th:text="#{person.firstName}">First name</td>
 					<td th:text="${student.firstName}"></td>
 				</tr>
 				<tr>
-					<td>Last name</td>
+					<td th:text="#{person.lastName}">Last name</td>
 					<td th:text="${student.lastName}"></td>
 				</tr>
 				<tr>
-					<td>Date of birth</td>
+					<td th:text="#{person.birthdate}">Date of birth</td>
 					<td th:text="${student.birthdate}"></td>
 				</tr>
 				<tr>
-					<td>Gender</td>
+					<td th:text="#{person.gender}">Gender</td>
 					<td th:text="${student.gender}"></td>
 				</tr>
 				<tr>
-					<td>Group</td>
+					<td th:text="#{student.group}">Group</td>
 					<td th:text="${student.groupName}"></td>
 				</tr>
 			</tbody>
