@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{index :: html_head}"></head>
+
+<body class="bg-light">
+    <div th:replace="~{index :: header('groups')}"></div>
+    <main class="container">
+		<form th:object="${group}" th:action="@{/groups/{path}(path=*{id == 0 ? 'add' : 'update'})}" th:method="post">
+          <input type="hidden" th:field="*{id}"/>
+		  <div class="mb-3">
+		    <label for="groupName" class="form-label" th:text="#{group.name}">Name</label>
+		    <input class="form-control" type="text" id="groupName" th:field="*{name}">
+		  </div>
+		  <button type="submit" class="btn btn-primary" th:text="#{form.save}">Save</button>
+		</form>
+    </main>
+    <div th:replace="~{index :: footer}"></div>
+</body>
+
+</html>

@@ -4,30 +4,39 @@
 <head th:replace="~{index :: html_head}"></head>
 
 <body>
-    <div th:replace="~{index :: header('students')}"></div>
-
-    <div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Birthdate</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="student, iterStat : ${students}">
-                    <th scope="row" th:text="${iterStat.count}"></th>
-                    <td th:text="${student.id}"></td>
-                    <td th:text="${student.firstName + ' ' + student.lastName}"></td>
-                    <td th:text="${student.birthdate}"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div th:replace="~{index :: footer}"></div>
+	<div th:replace="~{index :: header('students')}"></div>
+	<main class="container">
+		<div class="nav-scroller position-relative bg-body shadow-sm">
+			<nav class="nav nav-underline">
+				<a class="nav-link active" th:href="@{/students/new}"
+					th:text="#{form.new}">New</a>
+			</nav>
+		</div>
+		<table class="table">
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">ID</th>
+					<th scope="col">Name</th>
+					<th scope="col">Birthdate</th>
+					<th scope="col">Group</th>
+					<th scope="col" th:text="#{form.view}">View</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="student, iterStat : ${students}">
+					<th scope="row" th:text="${iterStat.count}"></th>
+					<td th:text="${student.id}"></td>
+					<td th:text="${student.firstName + ' ' + student.lastName}"></td>
+					<td th:text="${student.birthdate}"></td>
+					<td th:text="${student.groupName}"></td>
+					<td><a th:href="@{/students/{id}(id=${student.id})}"
+                        th:text="#{form.view}">View</a></td>
+				</tr>
+			</tbody>
+		</table>
+	</main>
+	<div th:replace="~{index :: footer}"></div>
 </body>
 
 </html>
