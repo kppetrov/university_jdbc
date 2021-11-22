@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +32,15 @@ public class StudentController {
 
     private StudentService studentService;
     private GroupService groupService;
+    private ModelMapper modelMapper;
 
     @GetMapping
     public String list(Model model) {
         LOGGER.debug("Listing students");
-        List<StudentListModel> students = studentService.getAll().stream().map(StudentListModel::new).collect(Collectors.toList());
+        List<StudentListModel> students = studentService.getAll()
+                .stream()
+                .map(student -> modelMapper.map(student, StudentListModel.class))
+                .collect(Collectors.toList());
         model.addAttribute("students", students);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("No. of students: {}", students.size());
@@ -48,8 +53,8 @@ public class StudentController {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Showing student. id = {}", id);
         }
-        StudentModel student = new StudentModel(studentService.getById(id));
-        model.addAttribute("student", student);
+        StudentModel studentModel = modelMapper.map(studentService.getById(id), StudentModel.class);
+        model.addAttribute("student", studentModel);
         return "students/show";
     }
 
@@ -58,10 +63,9 @@ public class StudentController {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Editing student. id = {}", id);
         }
-        StudentModel student = new StudentModel(studentService.getById(id));
-        model.addAttribute("student", student);
-        List<GroupModel> groups = groupService.getAll().stream().map(GroupModel::new).collect(Collectors.toList());
-        model.addAttribute("groups", groups);
+        StudentModel studentModel = modelMapper.map(studentService.getById(id), StudentModel.class);
+        model.addAttribute("student", studentModel);
+        model.addAttribute("groups", getGroupsModel());
         return "students/form";
     }
 
@@ -70,21 +74,21 @@ public class StudentController {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Createing student");
         }
-        StudentModel student = new StudentModel(new Student());
-        model.addAttribute("student", student);
-        List<GroupModel> groups = groupService.getAll().stream().map(GroupModel::new).collect(Collectors.toList());
-        model.addAttribute("groups", groups);
+        StudentModel studentModel = new StudentModel();
+        model.addAttribute("student", studentModel);
+        model.addAttribute("groups", getGroupsModel());
         return "students/form";
     }
 
     @PostMapping(value = "/update")
-    public String edit(@ModelAttribute("student") @Valid StudentModel student, BindingResult bindingResult, Model model) {
-        if(bindingResult.hasErrors()) {
-            List<GroupModel> groups = groupService.getAll().stream().map(GroupModel::new).collect(Collectors.toList());
-            model.addAttribute("groups", groups);
+    public String edit(@ModelAttribute("student") @Valid StudentModel studentModel, BindingResult bindingResult,
+            Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("groups", getGroupsModel());
             return "students/form";
         }
-        studentService.update(student.toEntity());
+        Student student = modelMapper.map(studentModel, Student.class);
+        studentService.update(student);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Student has been updated: {}", student);
         }
@@ -92,19 +96,19 @@ public class StudentController {
     }
 
     @PostMapping(value = "/add")
-    public String create(@ModelAttribute("student") @Valid StudentModel student, BindingResult bindingResult, Model model) {
-        if(bindingResult.hasErrors()) {
-            List<GroupModel> groups = groupService.getAll().stream().map(GroupModel::new).collect(Collectors.toList());
-            model.addAttribute("groups", groups);
+    public String create(@ModelAttribute("student") @Valid StudentModel studentModel, BindingResult bindingResult,
+            Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("groups", getGroupsModel());
             return "students/form";
         }
-        Student newStudent = studentService.insert(student.toEntity());
+        Student newStudent = studentService.insert(modelMapper.map(studentModel, Student.class));
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Student has been created: {}", newStudent);
         }
         return "redirect:/students";
     }
-    
+
     @GetMapping(value = "/remove/{id}")
     public String remove(@PathVariable("id") Integer id) {
         studentService.delete(id);
@@ -113,14 +117,26 @@ public class StudentController {
         }
         return "redirect:/students";
     }
+    
+    private List<GroupModel> getGroupsModel() {
+        return groupService.getAll()
+                .stream()
+                .map(group -> modelMapper.map(group, GroupModel.class))
+                .collect(Collectors.toList());
+    }
 
     @Autowired
     public void setStudentService(StudentService studentService) {
         this.studentService = studentService;
     }
-    
+
     @Autowired
     public void setGroupService(GroupService groupService) {
         this.groupService = groupService;
+    }
+
+    @Autowired
+    public void setModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 }

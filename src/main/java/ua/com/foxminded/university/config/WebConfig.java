@@ -2,6 +2,7 @@ package ua.com.foxminded.university.config;
 
 import java.util.Locale;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -112,5 +113,10 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware{
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("index");
+    }
+    
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 }

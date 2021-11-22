@@ -1,6 +1,6 @@
 package ua.com.foxminded.university.web.model;
 
-import ua.com.foxminded.university.model.Student;
+import java.util.Objects;
 
 public class StudentListModel {
     private int id;
@@ -10,23 +10,13 @@ public class StudentListModel {
 
     public StudentListModel() {
         
-    }
-    
-    public StudentListModel(Student student) {
-        this.id = student.getId();
-        this.firstName = student.getFirstName();
-        this.lastName = student.getLastName();
-        if (student.getGroup() != null) {
-            this.groupName = student.getGroup().getName();            
-        }
-    }
+    }    
 
-    public Student toEntity() {
-        Student student = new Student();
-        student.setId(id);
-        student.setFirstName(firstName);
-        student.setLastName(lastName);
-        return student;
+    public StudentListModel(int id, String firstName, String lastName, String groupName) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.groupName = groupName;
     }
 
     public int getId() {
@@ -59,5 +49,23 @@ public class StudentListModel {
 
     public void setGroupName(String groupName) {
         this.groupName = groupName;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(firstName, groupName, id, lastName);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        StudentListModel other = (StudentListModel) obj;
+        return Objects.equals(firstName, other.firstName) && Objects.equals(groupName, other.groupName)
+                && id == other.id && Objects.equals(lastName, other.lastName);
     }
 }

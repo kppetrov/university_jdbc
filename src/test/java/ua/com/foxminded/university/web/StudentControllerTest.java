@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,6 +30,7 @@ import ua.com.foxminded.university.model.Gender;
 import ua.com.foxminded.university.model.Group;
 import ua.com.foxminded.university.model.Student;
 import ua.com.foxminded.university.service.StudentService;
+import ua.com.foxminded.university.web.model.StudentListModel;
 
 @ExtendWith(MockitoExtension.class)
 @WebAppConfiguration
@@ -37,11 +39,15 @@ class StudentControllerTest {
     private MockMvc mockMvc;
     @Mock
     private StudentService studentService;
+    @Mock
+    private ModelMapper modelMapper;
     @InjectMocks
     private StudentController controller;
 
     private Student student = new Student(1, "first_name", "last_name", Gender.MAIL, LocalDate.of(2001, 01, 01),
             new Group(1, "group1"));
+    private StudentListModel studentListModel = new StudentListModel(student.getId(), student.getFirstName(),
+            student.getLastName(), student.getGroup().getName());
 
     @BeforeEach
     public void beforeEach() throws Exception {
@@ -50,10 +56,15 @@ class StudentControllerTest {
 
     @Test
     void testGetAll() throws Exception {
-        List<Student> expected = Arrays.asList(student);
-        when(studentService.getAll()).thenReturn(expected);
-        mockMvc.perform(get("/students")).andExpect(status().isOk()).andExpect(view().name("students/list"))
-                .andExpect(model().attributeExists("students")).andExpect(model().attribute("students", expected));
+        List<Student> students = Arrays.asList(student);
+        List<StudentListModel> expected = Arrays.asList(studentListModel);
+        when(modelMapper.map(student, StudentListModel.class)).thenReturn(studentListModel);
+        when(studentService.getAll()).thenReturn(students);
+        mockMvc.perform(get("/students"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("students/list"))
+                .andExpect(model().attributeExists("students"))
+                .andExpect(model().attribute("students", expected));
         verify(studentService, times(1)).getAll();
         verifyNoMoreInteractions(studentService);
     }

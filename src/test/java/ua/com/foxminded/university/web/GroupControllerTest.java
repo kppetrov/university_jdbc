@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ua.com.foxminded.university.config.WebConfig;
 import ua.com.foxminded.university.model.Group;
 import ua.com.foxminded.university.service.GroupService;
+import ua.com.foxminded.university.web.model.GroupModel;
 
 @ExtendWith(MockitoExtension.class)
 @WebAppConfiguration
@@ -34,10 +36,13 @@ class GroupControllerTest {
     private MockMvc mockMvc;
     @Mock
     private GroupService groupService;
+    @Mock
+    ModelMapper modelMapper;
     @InjectMocks
     private GroupController controller;
 
     private Group group = new Group(1, "group");
+    private GroupModel groupModel = new GroupModel(1, "group");
 
     @BeforeEach
     public void beforeEach() throws Exception {
@@ -46,8 +51,10 @@ class GroupControllerTest {
 
     @Test
     void testGetAll() throws Exception {
-        List<Group> expected = Arrays.asList(group);
-        when(groupService.getAll()).thenReturn(expected);
+        List<Group> groups = Arrays.asList(group);
+        List<GroupModel> expected = Arrays.asList(groupModel);
+        when(groupService.getAll()).thenReturn(groups);
+        when(modelMapper.map(group, GroupModel.class)).thenReturn(groupModel);
         mockMvc.perform(get("/groups"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("groups/list"))

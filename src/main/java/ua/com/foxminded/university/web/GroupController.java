@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,11 +28,15 @@ public class GroupController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupController.class);
 
     private GroupService groupService;
+    private ModelMapper modelMapper;
 
     @GetMapping
     public String list(Model model) {
         LOGGER.debug("Listing groups");
-        List<GroupModel> groups = groupService.getAll().stream().map(GroupModel::new).collect(Collectors.toList());
+        List<GroupModel> groups = groupService.getAll()
+                .stream()
+                .map(group -> modelMapper.map(group, GroupModel.class))
+                .collect(Collectors.toList());
         model.addAttribute("groups", groups);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("No. of groups: {}", groups.size());
@@ -44,7 +49,7 @@ public class GroupController {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Showing group. id = {}", id);
         }
-        GroupModel group = new GroupModel(groupService.getById(id));
+        GroupModel group = modelMapper.map(groupService.getById(id), GroupModel.class);
         model.addAttribute("group", group);
         return "groups/show";
     }  
@@ -54,7 +59,7 @@ public class GroupController {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Editing group. id = {}", id);
         }
-        GroupModel group = new GroupModel(groupService.getById(id));
+        GroupModel group = modelMapper.map(groupService.getById(id), GroupModel.class);
         model.addAttribute("group", group);
         return "groups/form";
     }
@@ -64,17 +69,18 @@ public class GroupController {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Createing group");
         }
-        GroupModel group = new GroupModel(new Group());
+        GroupModel group = new GroupModel();
         model.addAttribute("group", group);
         return "groups/form";
     }
     
     @PostMapping(value = "/update")
-    public String edit(@ModelAttribute("group") @Valid GroupModel group, BindingResult bindingResult) {
+    public String edit(@ModelAttribute("group") @Valid GroupModel groupModel, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             return "groups/form";
         }
-        groupService.update(group.toEntity());
+        Group group = modelMapper.map(groupModel, Group.class);
+        groupService.update(group);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Group has been updated: {}", group);
         }
@@ -82,11 +88,11 @@ public class GroupController {
     }
     
     @PostMapping(value = "/add")
-    public String create(@ModelAttribute("group") @Valid GroupModel group, BindingResult bindingResult) {
+    public String create(@ModelAttribute("group") @Valid GroupModel groupModel, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             return "groups/form";
         }
-        Group newGroup = groupService.insert(group.toEntity());
+        Group newGroup = groupService.insert(modelMapper.map(groupModel, Group.class));
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Group has been created: {}", newGroup);
         }
@@ -105,5 +111,10 @@ public class GroupController {
     @Autowired
     public void setGroupService(GroupService groupService) {
         this.groupService = groupService;
+    }
+    
+    @Autowired
+    public void setModelMapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 }

@@ -1,9 +1,9 @@
 package ua.com.foxminded.university.web.model;
 
+import java.util.Objects;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-
-import ua.com.foxminded.university.model.Group;
 
 public class GroupModel {
     private int id;
@@ -14,14 +14,10 @@ public class GroupModel {
     public GroupModel() {
         
     }
-    
-    public GroupModel(Group group) {
-        this.id = group.getId();
-        this.name = group.getName();
-    }
-    
-    public Group toEntity() {
-        return new Group(id, name);
+
+    public GroupModel(int id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public int getId() {
@@ -38,5 +34,22 @@ public class GroupModel {
     
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        GroupModel other = (GroupModel) obj;
+        return id == other.id && Objects.equals(name, other.name);
     }    
 }
