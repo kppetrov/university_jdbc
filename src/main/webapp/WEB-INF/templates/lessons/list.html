@@ -5,33 +5,37 @@
 
 <body>
     <div th:replace="~{index :: header('lessons')}"></div>
-
-    <div>
+    <main class="container">
+        <div class="nav-scroller position-relative bg-body shadow-sm">
+            <nav class="nav nav-underline">
+                <a class="nav-link active" th:href="@{/lessons/new}"
+                    th:text="#{form.new}">New</a>
+            </nav>
+        </div>
         <table class="table">
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">ID</th>
-                    <th scope="col">Course</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Period</th>
-                    <th scope="col">Classroom</th>
-                    <th scope="col">Teacher</th>
+                    <th scope="col" th:text="#{generic.id}">ID</th>
+                    <th scope="col" th:text="#{lesson.course}">Course</th>
+                    <th scope="col" th:text="#{lesson.date}">Date</th>
+                    <th scope="col" th:text="#{lesson.period}">Period</th>
+                    <th scope="col" th:text="#{form.view}">View</th>
                 </tr>
             </thead>
             <tbody>
                 <tr th:each="lesson, iterStat : ${lessons}">
                     <th scope="row" th:text="${iterStat.count}"></th>
                     <td th:text="${lesson.id}"></td>
-                    <td th:text="${lesson.course.name}"></td>
+                    <td th:text="${lesson.courseName}"></td>
                     <td th:text="${lesson.date}"></td>
-                    <td th:text="${lesson.period.start + ' - ' + lesson.period.end}"></td>
-                    <td th:text="${lesson.classroom.name}"></td>
-                    <td th:text="${lesson.teacher.firstName + ' ' + lesson.teacher.lastName}"></td>
+                    <td th:text="${lesson.periodName}"></td>
+                    <td><a th:href="@{/lessons/{id}(id=${lesson.id})}"
+                        th:text="#{form.view}">View</a></td>
                 </tr>
             </tbody>
         </table>
-    </div>
+    </main>
 
     <div th:replace="~{index :: footer}"></div>
 </body>
