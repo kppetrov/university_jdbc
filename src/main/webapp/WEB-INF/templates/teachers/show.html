@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{index :: html_head}"></head>
+
+<body class="bg-light">
+    <div th:replace="~{index :: header('teachers')}"></div>
+    <main class="container">
+        <div class="nav-scroller position-relative bg-body shadow-sm">
+            <nav class="nav nav-underline">
+                <a class="nav-link"
+                    th:href="@{/teachers/edit/{path}(path=${teacher.id})}"
+                    th:text="#{form.edit}">Edit</a> 
+                <a class="nav-link"
+                    th:href="@{/teachers/remove/{path}(path=${teacher.id})}"
+                    onclick="return confirm('Are you sure?')" th:text="#{form.remove}">Remove</a>
+            </nav>
+        </div>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td th:text="#{generic.id}">Id</td>
+                    <td th:text="${teacher.id}"></td>
+                </tr>
+                <tr>
+                    <td th:text="#{person.firstName}">First name</td>
+                    <td th:text="${teacher.firstName}"></td>
+                </tr>
+                <tr>
+                    <td th:text="#{person.lastName}">Last name</td>
+                    <td th:text="${teacher.lastName}"></td>
+                </tr>
+                <tr>
+                    <td th:text="#{person.birthdate}">Date of birth</td>
+                    <td th:text="${teacher.birthdate}"></td>
+                </tr>
+                <tr>
+                    <td th:text="#{person.gender}">Gender</td>
+                    <td th:text="${teacher.gender}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+    <div th:replace="~{index :: footer}"></div>
+</body>
+
+</html>
