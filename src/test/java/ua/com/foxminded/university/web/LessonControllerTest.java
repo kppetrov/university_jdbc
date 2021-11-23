@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,6 +34,7 @@ import ua.com.foxminded.university.model.Lesson;
 import ua.com.foxminded.university.model.Period;
 import ua.com.foxminded.university.model.Teacher;
 import ua.com.foxminded.university.service.LessonService;
+import ua.com.foxminded.university.web.model.LessonListModel;
 
 @ExtendWith(MockitoExtension.class)
 @WebAppConfiguration
@@ -41,6 +43,8 @@ class LessonControllerTest {
     private MockMvc mockMvc;
     @Mock
     private LessonService lessonService;
+    @Mock
+    private ModelMapper modelMapper;
     @InjectMocks
     private LessonController controller;
 
@@ -49,6 +53,8 @@ class LessonControllerTest {
     private Period period = new Period(1, "period", LocalTime.of(8, 0), LocalTime.of(9, 30));
     private Classroom classroom = new Classroom(1, "classroom");
     private Lesson lesson = new Lesson(1, course, LocalDate.of(2021, 01, 01), period, teacher, classroom);
+    private LessonListModel lessonListModel = new LessonListModel(lesson.getId(), course.getName(),
+            LocalDate.of(2021, 01, 01), period.getName());
 
     @BeforeEach
     public void beforeEach() throws Exception {
@@ -57,13 +63,12 @@ class LessonControllerTest {
 
     @Test
     void testGetAll() throws Exception {
-        List<Lesson> expected = Arrays.asList(lesson);
-        when(lessonService.getAll()).thenReturn(expected);
-        mockMvc.perform(get("/lessons"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("lessons/list"))
-                .andExpect(model().attributeExists("lessons"))
-                .andExpect(model().attribute("lessons", expected));
+        List<Lesson> lessons = Arrays.asList(lesson);
+        List<LessonListModel> expected = Arrays.asList(lessonListModel);
+        when(lessonService.getAll()).thenReturn(lessons);
+        when(modelMapper.map(lesson, LessonListModel.class)).thenReturn(lessonListModel);
+        mockMvc.perform(get("/lessons")).andExpect(status().isOk()).andExpect(view().name("lessons/list"))
+                .andExpect(model().attributeExists("lessons")).andExpect(model().attribute("lessons", expected));
         verify(lessonService, times(1)).getAll();
         verifyNoMoreInteractions(lessonService);
     }

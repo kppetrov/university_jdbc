@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -27,6 +28,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ua.com.foxminded.university.config.WebConfig;
 import ua.com.foxminded.university.model.Period;
 import ua.com.foxminded.university.service.PeriodService;
+import ua.com.foxminded.university.web.model.PeriodModel;
 
 @ExtendWith(MockitoExtension.class)
 @WebAppConfiguration
@@ -35,10 +37,13 @@ class PeriodControllerTest {
     private MockMvc mockMvc;
     @Mock
     private PeriodService periodService;
+    @Mock
+    private ModelMapper modelMapper;
     @InjectMocks
     private PeriodController controller;
 
     private Period period = new Period(1, "period", LocalTime.of(8, 0), LocalTime.of(9, 30));
+    private PeriodModel periodModel = new PeriodModel(1, "period", LocalTime.of(8, 0), LocalTime.of(9, 30));
 
     @BeforeEach
     public void beforeEach() throws Exception {
@@ -47,8 +52,10 @@ class PeriodControllerTest {
 
     @Test
     void testGetAll() throws Exception {
-        List<Period> expected = Arrays.asList(period);
-        when(periodService.getAll()).thenReturn(expected);
+        List<Period> periods = Arrays.asList(period);
+        List<PeriodModel> expected = Arrays.asList(periodModel);
+        when(periodService.getAll()).thenReturn(periods);
+        when(modelMapper.map(period, PeriodModel.class)).thenReturn(periodModel);
         mockMvc.perform(get("/periods"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("periods/list"))

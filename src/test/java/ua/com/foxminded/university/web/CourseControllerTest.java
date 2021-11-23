@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +27,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import ua.com.foxminded.university.config.WebConfig;
 import ua.com.foxminded.university.model.Course;
 import ua.com.foxminded.university.service.CourseService;
+import ua.com.foxminded.university.web.model.CourseModel;
 
 @ExtendWith(MockitoExtension.class)
 @WebAppConfiguration
@@ -34,10 +36,13 @@ class CourseControllerTest {
     private MockMvc mockMvc;
     @Mock
     private CourseService courseService;
+    @Mock
+    private ModelMapper modelMapper;
     @InjectMocks
     private CourseController controller;
 
     private Course course = new Course(1, "course"); 
+    private CourseModel courseModel = new CourseModel(1, "course"); 
 
     @BeforeEach
     public void beforeEach() throws Exception {
@@ -46,8 +51,10 @@ class CourseControllerTest {
 
     @Test
     void testGetAll() throws Exception {
-        List<Course> expected = Arrays.asList(course);
-        when(courseService.getAll()).thenReturn(expected);
+        List<Course> courses = Arrays.asList(course);
+        List<CourseModel> expected = Arrays.asList(courseModel);
+        when(courseService.getAll()).thenReturn(courses);
+        when(modelMapper.map(course, CourseModel.class)).thenReturn(courseModel);
         mockMvc.perform(get("/courses"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("courses/list"))

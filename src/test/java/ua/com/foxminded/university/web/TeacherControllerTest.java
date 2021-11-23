@@ -19,6 +19,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -28,6 +29,7 @@ import ua.com.foxminded.university.config.WebConfig;
 import ua.com.foxminded.university.model.Gender;
 import ua.com.foxminded.university.model.Teacher;
 import ua.com.foxminded.university.service.TeacherService;
+import ua.com.foxminded.university.web.model.TeacherListModel;
 
 @ExtendWith(MockitoExtension.class)
 @WebAppConfiguration
@@ -36,10 +38,13 @@ class TeacherControllerTest {
     private MockMvc mockMvc;
     @Mock
     private TeacherService teacherService;
+    @Mock
+    private ModelMapper modelMapper;
     @InjectMocks
     private TeacherController controller;
 
     private Teacher teacher = new Teacher(1, "first_name", "last_name", Gender.MAIL, LocalDate.of(1971, 01, 01));
+    private TeacherListModel teacherListModel = new TeacherListModel(1, "first_name", "last_name");
 
     @BeforeEach
     public void beforeEach() throws Exception {
@@ -48,8 +53,10 @@ class TeacherControllerTest {
 
     @Test
     void testGetAll() throws Exception {
-        List<Teacher> expected = Arrays.asList(teacher);
-        when(teacherService.getAll()).thenReturn(expected);
+        List<Teacher> teachers = Arrays.asList(teacher);
+        List<TeacherListModel> expected = Arrays.asList(teacherListModel);        
+        when(teacherService.getAll()).thenReturn(teachers);
+        when(modelMapper.map(teacher, TeacherListModel.class)).thenReturn(teacherListModel);
         mockMvc.perform(get("/teachers"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("teachers/list"))
