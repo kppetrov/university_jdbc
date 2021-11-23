@@ -6,14 +6,21 @@
 <body>
     <div th:replace="~{index :: header('periods')}"></div>
 
-    <div>
+    <main class="container">
+        <div class="nav-scroller position-relative bg-body shadow-sm">
+            <nav class="nav nav-underline">
+                <a class="nav-link active" th:href="@{/periods/new}"
+                    th:text="#{form.new}">New</a>
+            </nav>
+        </div>
         <table class="table">
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Period</th>
+                    <th scope="col"  th:text="#{generic.id}">ID</th>
+                    <th scope="col"  th:text="#{period.name}">Name</th>
+                    <th scope="col" th:text="#{period.period}">Period</th>
+                    <th scope="col" th:text="#{form.view}">View</th>
                 </tr>
             </thead>
             <tbody>
@@ -22,10 +29,12 @@
                     <td th:text="${period.id}"></td>
                     <td th:text="${period.name}"></td>
                     <td th:text="${period.start + ' - ' + period.end}"></td>
+                    <td><a th:href="@{/periods/{id}(id=${period.id})}"
+                        th:text="#{form.view}">View</a></td>
                 </tr>
             </tbody>
         </table>
-    </div>
+    </main>
 
     <div th:replace="~{index :: footer}"></div>
 </body>
