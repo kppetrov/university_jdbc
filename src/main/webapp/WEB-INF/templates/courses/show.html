@@ -16,18 +16,37 @@
                     onclick="return confirm('Are you sure?')" th:text="#{form.remove}">Remove</a>
             </nav>
         </div>
-        <table class="table">
-            <tbody>
-                <tr>
-                    <td th:text="#{generic.id}">Id</td>
-                    <td th:text="${course.id}"></td>
-                </tr>
-                <tr>
-                    <td th:text="#{course.name}">Name</td>
-                    <td th:text="${course.name}"></td>
-                </tr>
-            </tbody>
-        </table>
+        <div>
+	        <table class="table">
+	            <tbody>
+	                <tr>
+	                    <td th:text="#{generic.id}">Id</td>
+	                    <td th:text="${course.id}"></td>
+	                </tr>
+	                <tr>
+	                    <td th:text="#{course.name}">Name</td>
+	                    <td th:text="${course.name}"></td>
+	                </tr>
+	            </tbody>
+	        </table>
+        </div>
+        <h6 th:text="#{course.groups}">Groups</h6>
+        <div>
+	        <table class="table">
+	            <thead>
+	                <tr>
+	                    <td>#</td>
+	                    <td th:text="#{group.name}">Name</td>
+	                </tr>
+	            </thead>
+	            <tbody>
+	                <tr th:each="group, iterStat : ${course.groups}">
+	                    <td th:text="${iterStat.count}"></td>
+	                    <td th:text="${group.name}"></td>
+	                </tr>
+	            </tbody>
+	        </table>
+        </div>
     </main>
     <div th:replace="~{index :: footer}"></div>
 </body>

@@ -20,7 +20,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import ua.com.foxminded.university.model.Course;
 import ua.com.foxminded.university.service.CourseService;
+import ua.com.foxminded.university.service.GroupService;
 import ua.com.foxminded.university.web.model.CourseModel;
+import ua.com.foxminded.university.web.model.CourseModelWithGroups;
+import ua.com.foxminded.university.web.model.GroupModel;
 
 @RequestMapping("/courses")
 @Controller
@@ -28,6 +31,7 @@ public class CourseController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CourseController.class);
 
     private CourseService courseService;
+    private GroupService groupService;
     private ModelMapper modelMapper;
 
     @GetMapping
@@ -49,7 +53,7 @@ public class CourseController {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Showing course. id = {}", id);
         }
-        CourseModel course = modelMapper.map(courseService.getById(id), CourseModel.class);
+        CourseModelWithGroups course = modelMapper.map(courseService.getByIdWithDetail(id), CourseModelWithGroups.class);
         model.addAttribute("course", course);
         return "courses/show";
     }  
@@ -59,9 +63,10 @@ public class CourseController {
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Editing course. id = {}", id);
         }
-        CourseModel course = modelMapper.map(courseService.getById(id), CourseModel.class);
+        CourseModelWithGroups course = modelMapper.map(courseService.getByIdWithDetail(id), CourseModelWithGroups.class);
         model.addAttribute("course", course);
-        return "courses/form";
+        model.addAttribute("allGroups", getGroupsModel());
+        return "courses/updateForm";
     }
     
     @GetMapping(value = "/new")
@@ -71,16 +76,18 @@ public class CourseController {
         }
         CourseModel course = new CourseModel();
         model.addAttribute("course", course);
-        return "courses/form";
+        return "courses/newForm";
     }
     
     @PostMapping(value = "/update")
-    public String edit(@ModelAttribute("course") @Valid CourseModel courseModel, BindingResult bindingResult) {
+    public String edit(@ModelAttribute("course") @Valid CourseModelWithGroups courseModel, BindingResult bindingResult, Model model) {
         if(bindingResult.hasErrors()) {
-            return "courses/form";
+            model.addAttribute("allGroups", getGroupsModel());
+            return "courses/updateForm";
         }
         Course course = modelMapper.map(courseModel, Course.class);
         courseService.update(course);
+        courseService.updateGroups(course);
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Course has been updated: {}", course);
         }
@@ -90,7 +97,7 @@ public class CourseController {
     @PostMapping(value = "/add")
     public String create(@ModelAttribute("course") @Valid CourseModel courseModel, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
-            return "courses/form";
+            return "courses/newForm";
         }
         Course newCourse = courseService.insert(modelMapper.map(courseModel, Course.class));
         if (LOGGER.isDebugEnabled()) {
@@ -108,6 +115,13 @@ public class CourseController {
         return "redirect:/courses";
     }
     
+    private List<GroupModel> getGroupsModel() {
+        return groupService.getAll()
+                .stream()
+                .map(group -> modelMapper.map(group, GroupModel.class))
+                .collect(Collectors.toList());
+    }
+    
     @Autowired
     public void setModelMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
@@ -117,4 +131,9 @@ public class CourseController {
     public void setCourseService(CourseService courseService) {
         this.courseService = courseService;
     }
+
+    @Autowired
+    public void setGroupService(GroupService groupService) {
+        this.groupService = groupService;
+    }    
 }
