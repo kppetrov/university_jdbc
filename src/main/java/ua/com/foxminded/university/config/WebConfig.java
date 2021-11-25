@@ -71,7 +71,7 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware{
     }  
     
     @Bean
-    ReloadableResourceBundleMessageSource messageSource() {
+    public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
         messageSource.setBasenames("WEB-INF/i18n/application", "WEB-INF/i18n/messages");
         messageSource.setDefaultEncoding("UTF-8");
@@ -97,7 +97,7 @@ public class WebConfig implements WebMvcConfigurer, ApplicationContextAware{
     }
 
     @Bean
-    LocaleChangeInterceptor localeChangeInterceptor() { 
+    public LocaleChangeInterceptor localeChangeInterceptor() { 
         LocaleChangeInterceptor localeChangeInterceptor = new LocaleChangeInterceptor();
         localeChangeInterceptor.setParamName("lang");
         return localeChangeInterceptor;
