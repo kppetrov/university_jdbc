@@ -6,6 +6,7 @@ import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_INSERT;
 import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_UPDATE;
 import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_DELETE;
 import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_REMOVE_GROUP_FROM_COURSE;
+import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_REMOVE_ALL_GROUP_FROM_COURSE;
 import static ua.com.foxminded.university.dao.jdbc.Query.COURSE_ADD_GROUP_TO_COURSE;
 
 import java.util.List;
@@ -151,11 +152,16 @@ public class CourseDaoJdbc extends AbstractDAO implements CourseDao {
         }
         try {
             int result = 0;
-            List<Integer> groupIds = item.getGroups().stream().map(Group::getId).collect(Collectors.toList());
-            SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("course_id", item.getId())
-                    .addValue("group_ids", groupIds);
-            result += jdbcTemplate.update(COURSE_REMOVE_GROUP_FROM_COURSE, namedParameters);
-            result += jdbcTemplate.update(COURSE_ADD_GROUP_TO_COURSE, namedParameters);
+            if (item.getGroups() == null || item.getGroups().isEmpty()) {
+                SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("course_id", item.getId());
+                result += jdbcTemplate.update(COURSE_REMOVE_ALL_GROUP_FROM_COURSE, namedParameters);
+            } else {
+                List<Integer> groupIds = item.getGroups().stream().map(Group::getId).collect(Collectors.toList());
+                SqlParameterSource namedParameters = new MapSqlParameterSource().addValue("course_id", item.getId())
+                        .addValue("group_ids", groupIds);
+                result += jdbcTemplate.update(COURSE_REMOVE_GROUP_FROM_COURSE, namedParameters);
+                result += jdbcTemplate.update(COURSE_ADD_GROUP_TO_COURSE, namedParameters);
+            }
             return result;
         } catch (DataAccessException e) {
             throw new DaoException("Cannot update course groups. " + item, e);

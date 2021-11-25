@@ -167,4 +167,25 @@ class CourseDaoJdbcTest {
                () -> assertEquals(course2.getGroups(), actual2.getGroups())
                );       
     }
+    
+    @Test
+    @Sql(value = { "/insert-data.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(value = { "/remove-data.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+    void testUpdateGroupsInAbsenceGroups() {
+        course1.getGroups().clear(); 
+        course2.getGroups().clear();
+        
+       int countUpdate1 = dao.updateGroups(course1);
+       int countUpdate2 = dao.updateGroups(course2);       
+       Course actual1 = dao.getByIdWithDetail(course1.getId());
+       Course actual2 = dao.getByIdWithDetail(course2.getId());
+       assertAll(
+               () -> assertEquals(1, countUpdate1), 
+               () -> assertEquals(course1, actual1), 
+               () -> assertEquals(course1.getGroups(), actual1.getGroups()),
+               () -> assertEquals(1, countUpdate2), 
+               () -> assertEquals(course2, actual2), 
+               () -> assertEquals(course2.getGroups(), actual2.getGroups())
+               );       
+    }
 }

@@ -13,6 +13,7 @@ public class Query {
     public static final String COURSE_UPDATE = "update courses set name = :name where id = :id";
     public static final String COURSE_DELETE = "delete from courses where id = :id";    
     public static final String COURSE_REMOVE_GROUP_FROM_COURSE = "delete from course_group where course_id = :course_id and not group_id in(:group_ids)";
+    public static final String COURSE_REMOVE_ALL_GROUP_FROM_COURSE = "delete from course_group where course_id = :course_id";
     public static final String COURSE_ADD_GROUP_TO_COURSE = 
             "insert into course_group (course_id, group_id) "
             + "select :course_id, g.id "
