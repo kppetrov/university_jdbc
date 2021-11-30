@@ -10,7 +10,7 @@ import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 public class LessonEditModel {
     private int id;
-    private String courseId; 
+    private int courseId; 
     @DateTimeFormat(iso = ISO.DATE)
     @NotNull(message = "{validation.lesson.date.NotNull.message}")
     private LocalDate date;
@@ -22,7 +22,7 @@ public class LessonEditModel {
         
     }
 
-    public LessonEditModel(int id, String courseId, LocalDate date, int periodId, int classroomId, int teacherId) {
+    public LessonEditModel(int id, int courseId, LocalDate date, int periodId, int classroomId, int teacherId) {
         this.id = id;
         this.courseId = courseId;
         this.date = date;
@@ -39,11 +39,11 @@ public class LessonEditModel {
         this.id = id;
     }
 
-    public String getCourseId() {
+    public int getCourseId() {
         return courseId;
     }
 
-    public void setCourseId(String courseId) {
+    public void setCourseId(int courseId) {
         this.courseId = courseId;
     }
 
