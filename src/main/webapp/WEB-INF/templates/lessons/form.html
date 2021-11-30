@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{index :: html_head}"></head>
+
+<body class="bg-light">
+    <div th:replace="~{index :: header('lessons')}"></div>
+    <main class="container">
+		<form th:object="${lesson}" 
+		th:action="@{/lessons/{path}(path=*{id == 0 ? 'add' : 'update'})}" 
+		th:method="post">
+          <input type="hidden" th:field="*{id}"/>
+		  <div class="mb-3">
+            <label for="lessonCourse" class="form-label" th:text="#{lesson.course}">Course</label>
+			<select class="form-select"  id="lessonCourse" name="courseId">
+                <option th:each="course : ${courses}" th:value="${course.id}" 
+                    th:text="${course.name}" th:selected="*{courseId}  == ${course.id}"></option>
+		    </select>
+          </div>
+          <div class="mb-3">
+            <label for="lessonDate" class="form-label" th:text="#{lesson.date}">Date</label>
+            <input class="form-control" type="date" id="lessonDate" 
+	            th:classappend="${#fields.hasErrors('date') ? 'is-invalid' : _ }"
+	            th:field="*{date}"/>
+            <div class="invalid-feedback" th:if="${#fields.hasErrors('date')}"
+                    th:errors="*{date}">Error</div>
+          </div>
+          <div class="mb-3">
+            <label for="lessonPeriod" class="form-label" th:text="#{lesson.period}">Period</label>
+            <select class="form-select"  id="lessonPeriod" name="periodId">
+                <option th:each="period : ${periods}" th:value="${period.id}" 
+                    th:text="${period.name}" th:selected="*{periodId} == ${period.id}"></option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="lessonClassroom" class="form-label" th:text="#{lesson.classroom}">Classroom</label>
+            <select class="form-select"  id="lessonClassroom" name="classroomId">
+                <option th:each="classroom : ${classrooms}" th:value="${classroom.id}" 
+                    th:text="${classroom.name}" th:selected="*{classroomId} == ${classroom.id}"></option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="courseTeacher" class="form-label" th:text="#{lesson.teacher}">Teacher</label>
+            <select class="form-select"  id="courseTeacher" name="teacherId">
+                <option th:each="teacher : ${teachers}" th:value="${teacher.id}" 
+                    th:text="${teacher.firstName + ' ' + teacher.lastName}" th:selected="*{teacherId} == ${teacher.id}"></option>
+            </select>
+          </div>          
+		  <button type="submit" class="btn btn-primary">Save</button>
+		</form>	
+    </main>
+    <div th:replace="~{index :: footer}"></div>
+</body>
+
+</html>

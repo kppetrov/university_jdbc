@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{index :: html_head}"></head>
+
+<body class="bg-light">
+    <div th:replace="~{index :: header('courses')}"></div>
+    <main class="container">
+        <form th:object="${course}"
+            th:action="@{/courses/{path}(path=*{id == 0 ? 'add' : 'update'})}"
+            th:method="post">
+            <div class="mb-3">
+                <input type="hidden" th:field="*{id}" />
+            </div>
+            <div class="mb-3">
+                <label for="courseName" class="form-label" th:text="#{course.name}">Name</label>
+                <input class="form-control" type="text" id="courseName"
+                    th:classappend="${#fields.hasErrors('name') ? 'is-invalid' : _ }"
+                    th:field="*{name}">
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}"
+                    th:errors="*{name}">Name Error</div>
+            </div>
+            <div class="mb-3">
+				<div class="form-check" th:each="group : ${allGroups}">
+					<input class="form-check-input" type="checkbox" th:id="${{group}}"
+						th:value="${{group}}"
+						th:checked="${course.groups.contains(group)}" name="groups" /> 
+					<label
+						class="form-check-label" th:for="${{group}}"
+						th:text="${group.name}"></label>
+				</div>
+			</div>
+            <button type="submit" class="btn btn-primary" th:text="#{form.save}">Save</button>
+        </form>
+    </main>
+    <div th:replace="~{index :: footer}"></div>
+</body>
+
+</html>

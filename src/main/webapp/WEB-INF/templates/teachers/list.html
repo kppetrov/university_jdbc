@@ -6,14 +6,20 @@
 <body>
     <div th:replace="~{index :: header('teachers')}"></div>
 
-    <div>
+    <main class="container">
+        <div class="nav-scroller position-relative bg-body shadow-sm">
+            <nav class="nav nav-underline">
+                <a class="nav-link active" th:href="@{/teachers/new}"
+                    th:text="#{form.new}">New</a>
+            </nav>
+        </div>
         <table class="table">
             <thead>
                 <tr>
                     <th scope="col">#</th>
-                    <th scope="col">ID</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Birthdate</th>
+                    <th scope="col" th:text="#{generic.id}">ID</th>
+                    <th scope="col" th:text="#{person.fullName}">Name</th>
+                    <th scope="col" th:text="#{form.view}">View</th>
                 </tr>
             </thead>
             <tbody>
@@ -21,11 +27,12 @@
                     <th scope="row" th:text="${iterStat.count}"></th>
                     <td th:text="${teacher.id}"></td>
                     <td th:text="${teacher.firstName + ' ' + teacher.lastName}"></td>
-                    <td th:text="${teacher.birthdate}"></td>
+                    <td><a th:href="@{/teachers/{id}(id=${teacher.id})}"
+                        th:text="#{form.view}">View</a></td>
                 </tr>
             </tbody>
         </table>
-    </div>
+    </main>
 
     <div th:replace="~{index :: footer}"></div>
 </body>

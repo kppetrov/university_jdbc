@@ -13,6 +13,7 @@ public class Query {
     public static final String COURSE_UPDATE = "update courses set name = :name where id = :id";
     public static final String COURSE_DELETE = "delete from courses where id = :id";    
     public static final String COURSE_REMOVE_GROUP_FROM_COURSE = "delete from course_group where course_id = :course_id and not group_id in(:group_ids)";
+    public static final String COURSE_REMOVE_ALL_GROUP_FROM_COURSE = "delete from course_group where course_id = :course_id";
     public static final String COURSE_ADD_GROUP_TO_COURSE = 
             "insert into course_group (course_id, group_id) "
             + "select :course_id, g.id "
@@ -115,12 +116,23 @@ public class Query {
     public static final String PERIOD_UPDATE = "update periods set name = :name, start_time = :start_time, end_time = :end_time where id = :id";
     public static final String PERIOD_DELETE = "delete from periods where id = :id";
     
-    public static final String STUDENT_GET_ALL = "select id as student_id, first_name, last_name, gender, birthdate from students";
-    public static final String STUDENT_GET_BY_ID = "select id as student_id, first_name, last_name, gender, birthdate from students where id = :id";
-    public static final String STUDENT_INSERT = "insert into students (first_name, last_name, gender, birthdate) "
-                                       + "values (:first_name, :last_name, :gender, :birthdate)";
+    public static final String STUDENT_GET_ALL = 
+            "select "
+                + "s.id as student_id, "
+                + "s.first_name as first_name, "
+                + "s.last_name as last_name, "
+                + "s.gender as gender, "
+                + "s.birthdate as birthdate, "
+                + "g.id as group_id, "
+                + "g.name as group_name "
+            + "from students as s "
+                + "left join groups as g "
+                    + "on s.group_id = g.id";
+    public static final String STUDENT_GET_BY_ID = STUDENT_GET_ALL + " where s.id = :id";
+    public static final String STUDENT_INSERT = "insert into students (first_name, last_name, gender, birthdate, group_id) "
+                                       + "values (:first_name, :last_name, :gender, :birthdate, :group_id)";
     public static final String STUDENT_UPDATE = "update students "
-                                       + "set first_name = :first_name, last_name = :last_name, gender = :gender, birthdate = :birthdate "
+                                       + "set first_name = :first_name, last_name = :last_name, gender = :gender, birthdate = :birthdate, group_id = :group_id "
                                        + "where id = :id";
     public static final String STUDENT_DELETE = "delete from students where id = :id";
     

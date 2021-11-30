@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="~{index :: html_head}"></head>
+<body class="bg-light">
+	<div th:replace="~{index :: header('')}"></div>
+	<main class="container">
+		<div class="alert alert-danger" role="alert" th:text="#{error.message}">Error</div>
+	</main>
+	<div th:replace="~{index :: footer}"></div>
+</body>
+</html>

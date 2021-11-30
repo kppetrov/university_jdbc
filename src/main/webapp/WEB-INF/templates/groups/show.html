@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head th:replace="~{index :: html_head}"></head>
+
+<body class="bg-light">
+    <div th:replace="~{index :: header('groups')}"></div>
+    <main class="container">
+        <div class="nav-scroller position-relative bg-body shadow-sm">
+            <nav class="nav nav-underline">
+                <a class="nav-link"
+                    th:href="@{/groups/edit/{path}(path=${group.id})}"
+                    th:text="#{form.edit}">Edit</a> 
+                <a class="nav-link"
+                    th:href="@{/groups/remove/{path}(path=${group.id})}"
+                    onclick="return confirm('Are you sure?')" th:text="#{form.remove}">Remove</a>
+            </nav>
+        </div>
+        <table class="table">
+            <tbody>
+                <tr>
+                    <td th:text="#{generic.id}">Id</td>
+                    <td th:text="${group.id}"></td>
+                </tr>
+                <tr>
+                    <td th:text="#{group.name}">Name</td>
+                    <td th:text="${group.name}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </main>
+    <div th:replace="~{index :: footer}"></div>
+</body>
+
+</html>

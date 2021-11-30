@@ -71,6 +71,7 @@ public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
         }
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
+                    .addValue("group_id", item.getGroup().getId())
                     .addValue("first_name", item.getFirstName())
                     .addValue("last_name", item.getLastName())
                     .addValue("gender", item.getGender().getValue())
@@ -78,7 +79,7 @@ public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
             KeyHolder keyHolder = new GeneratedKeyHolder();
             jdbcTemplate.update(STUDENT_INSERT, namedParameters, keyHolder, new String[] { "id" });
             return new Student(keyHolder.getKeyAs(Integer.class), item.getFirstName(), item.getLastName(),
-                    item.getGender(), item.getBirthdate());
+                    item.getGender(), item.getBirthdate(), item.getGroup());
         } catch (DataAccessException e) {
             throw new DaoException("Cannot create student. " + item, e);
         }
@@ -92,6 +93,7 @@ public class StudentDaoJdbc extends AbstractDAO implements StudentDao {
         try {
             SqlParameterSource namedParameters = new MapSqlParameterSource()
                     .addValue("id", item.getId())
+                    .addValue("group_id", item.getGroup().getId())
                     .addValue("first_name", item.getFirstName())
                     .addValue("last_name", item.getLastName())
                     .addValue("gender", item.getGender().getValue())
