@@ -19,7 +19,6 @@ public class DataConfig {
     @Value("${jdbc.url}")
     private String jdbcUrl;
 
-    @Bean(destroyMethod = "")
     public DataSource dataSource() throws NamingException {
         return (DataSource) new JndiTemplate().lookup(jdbcUrl);
     }
