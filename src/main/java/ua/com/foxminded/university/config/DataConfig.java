@@ -1,40 +1,30 @@
 package ua.com.foxminded.university.config;
 
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jndi.JndiTemplate;
 
 @Configuration
-@PropertySource("classpath:db/jdbc.properties")
-@ComponentScan(basePackages = {"ua.com.foxminded.university.dao", "ua.com.foxminded.university.service"})
+@PropertySource("classpath:db/jndi.properties")
+@ComponentScan(basePackages = { "ua.com.foxminded.university.dao", "ua.com.foxminded.university.service" })
 public class DataConfig {
-    @Value("${driverClassName}")
-    private String driverClassName;
-    @Value("${url}")
-    private String url;
-    @Value("${user}")
-    private String user;
-    @Value("${password}")
-    private String password;
 
-    @Bean(destroyMethod = "close")
-    public DataSource dataSource() {
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(driverClassName);
-        dataSource.setUrl(url);
-        dataSource.setUsername(user);
-        dataSource.setPassword(password);
-        return dataSource;
+    @Value("${jdbc.url}")
+    private String jdbcUrl;
+
+    public DataSource dataSource() throws NamingException {
+        return (DataSource) new JndiTemplate().lookup(jdbcUrl);
     }
-    
+
     @Bean
-    public NamedParameterJdbcTemplate jdbcTemplate() {
+    public NamedParameterJdbcTemplate jdbcTemplate() throws NamingException {
         return new NamedParameterJdbcTemplate(dataSource());
     }
 }
